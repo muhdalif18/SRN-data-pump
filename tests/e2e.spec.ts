@@ -23,7 +23,7 @@ test("test", async ({ page }) => {
   await page.getByRole("textbox", { name: "No. Pengenalan" }).click();
   await page
     .getByRole("textbox", { name: "No. Pengenalan" })
-    .fill("951004146116");
+    .fill("860125085432");
   await page.getByRole("button", { name: "Hantar" }).click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
@@ -33,7 +33,7 @@ test("test", async ({ page }) => {
     .click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
-    .fill("Password123");
+    .fill("Passw0rd");
   await page
     .getByText("Percubaan Log Masuk Anda : 0 /")
     .waitFor({ state: "visible", timeout: 10000 });
@@ -119,19 +119,21 @@ test("test", async ({ page }) => {
         `FOR BANTAHAN DAN RAYUAN (OBJECTION AND APPEAL ONLY). STRICLY DONT USE. ${i}`,
       );
     await page
-      .locator("span.input-group-text.cursor-pointer")
+      .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
       .waitFor({ state: "visible", timeout: 10000 });
-    await page
-      .locator("span.input-group-text.cursor-pointer")
-      .first()
-      .click({ force: true });
-    await page.getByLabel("May 8,").first().click();
-    await page.getByRole("textbox", { name: "dd/MM/yyyy" }).fill("08/05/2026");
+    await page.getByRole("textbox", { name: "dd/MM/yyyy" }).first().click();
+    await page.getByRole("textbox", { name: "dd/MM/yyyy" }).first().fill("08/05/2026");
+    await page.getByRole("textbox", { name: "dd/MM/yyyy" }).first().press("Enter");
+    await page.getByText("Tempat Surat Cara Ditandatangan*").click();
+    await expect(
+      page.getByRole("textbox", { name: "dd/MM/yyyy" }).first(),
+    ).toHaveValue("08/05/2026");
     await page.getByRole("radio", { name: "Luar Malaysia" }).check();
     await page.getByRole("radio", { name: "Malaysia", exact: true }).check();
     await page.getByRole("button", { name: "Seterusnya " }).click();
-    await page.getByText("1 Pihak Pertama Simpan").click();
+    await page.waitForTimeout(3000);
+    /*  await page.getByText("1 Pihak Pertama Simpan").click();
     await page.getByRole("button", { name: "OK" }).click();
     await page
       .locator(".collapse-body > div > div:nth-child(2)")
@@ -143,7 +145,7 @@ test("test", async ({ page }) => {
       .click();
     await page
       .locator('input[name="StampingForm.FormAIndividualList[0].Name"]')
-      .click();
+      .click(); */
     await page
       .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
       .check();
@@ -522,6 +524,7 @@ test("test", async ({ page }) => {
     await page.waitForTimeout(2000);
     await page
       .getByText("Tindakan - Taksiran Duti")
+      .nth(1)
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByText("Tindakan - Taksiran Duti").nth(1).click();
     await page

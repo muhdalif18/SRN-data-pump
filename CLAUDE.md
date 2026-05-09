@@ -1,0 +1,99 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Setup and execution commands
+
+- Install dependencies:
+  - `npm install`
+  - `npx playwright install --with-deps`
+
+- Run all Playwright tests:
+  - `npm test`
+
+- Run in headed mode:
+  - `npm run test:headed`
+
+- Run with Playwright UI:
+  - `npm run test:ui`
+
+- Open Playwright HTML report:
+  - `npm run report`
+
+- Run single specs (primary workflows):
+  - `npm run e2e:one`
+  - `npm run login:one`
+  - `npm run stamping-peranan-ejen-duti-setem:one`
+  - `npm run stamping-peranan-ejen-firma-guaman:one`
+  - `npm run e2e-ejen-duti-setem:one`
+
+- PM2 long-running jobs:
+  - Start:
+    - `npm run e2e:forever`
+    - `npm run login:forever`
+    - `npm run stamping-peranan-ejen-duti-setem:forever`
+    - `npm run stamping-peranan-ejen-firma-guaman:forever`
+    - `npm run e2e-ejen-duti-setem:forever`
+  - Logs:
+    - `npm run e2e:logs`
+    - `npm run login:logs`
+    - `npm run stamping-peranan-ejen-duti-setem:logs`
+    - `npm run stamping-peranan-ejen-firma-guaman:logs`
+    - `npm run e2e-ejen-duti-setem:logs`
+  - Stop:
+    - `npm run e2e:stop`
+    - `npm run login:stop`
+    - `npm run stamping-peranan-ejen-duti-setem:stop`
+    - `npm run stamping-peranan-ejen-firma-guaman:stop`
+    - `npm run e2e-ejen-duti-setem:stop`
+  - Status:
+    - `npm run bots:status`
+
+- Docker path from README:
+  - `docker run -v ${PWD}/test-data:/app/test-data matalep00/ds7-automation:latest`
+  - With report output:
+    - `docker run -v ${PWD}/test-data:/app/test-data -v ${PWD}/playwright-report:/app/playwright-report matalep00/ds7-automation:latest`
+
+## High-level architecture
+
+This repository is a Playwright-driven browser automation suite for e-Duti workflows spanning multiple web systems and roles.
+
+### 1) Runtime and orchestration
+
+- Core runtime is configured in `playwright.config.ts`.
+- Tests run serially (`workers: 1`, `fullyParallel: false`) and with long timeouts to support heavy end-to-end flows.
+- Browser is non-headless and configured to use the real maximized window (`viewport: null`, `--start-maximized`) to avoid layout compression/cutoff issues in UI-heavy pages.
+- `ecosystem.config.cjs` maps PM2 app names to specific spec files for persistent/restarting runs.
+
+### 2) Workflow style in specs
+
+- Specs in `tests/*.spec.ts` are long scenario scripts that combine:
+  - login to MyTax/e-Duti,
+  - stamping submission creation,
+  - SRN extraction,
+  - follow-up actions in HITS,
+  - repeated iterations (`for` loops) for bulk processing.
+- These are stateful system tests, not isolated unit tests; many assertions are implicit via waits/selectors and successful navigation.
+
+### 3) Role-specific variants
+
+- The suite has multiple near-parallel flows with role/account differences:
+  - base e2e (`e2e.spec.ts`),
+  - ejen duti setem variant (`e2e-ejen-duti-setem.spec.ts`),
+  - stamping role flows (`stamping-peranan-ejen-duti-setem.spec.ts`, `stamping-peranan-ejen-firma-guaman.spec.ts`),
+  - login-focused scripts (`login.spec.ts`, `login2.spec.ts`).
+- Most maintenance work is selector, timing, and role-switch logic updates across these parallel flows.
+
+### 4) Data dependencies and outputs
+
+- Input data is file-driven from `test-data/` (addresses JSON, users JSON, image upload file, spreadsheet).
+- Scripts append execution artifacts (e.g., SRN and related values) into `test-data/current-url*.txt` for downstream tracing.
+- Because tests depend on live systems and credentials, failures often come from session expiry, backend timing variance, or environment/account state rather than code logic alone.
+
+## Project-specific notes for edits
+
+- If adding a new long-running automation spec, wire it in both places:
+  1. `ecosystem.config.cjs` (new PM2 app entry)
+  2. `package.json` scripts (`:one`, `:forever`, `:logs`, `:stop`)
+- Keep selectors and waits resilient for long loops; this codebase is sensitive to UI timing and session continuity across iterations.
+- No `.cursor` rules, `.cursorrules`, or `.github/copilot-instructions.md` were found in this repository at time of writing.

@@ -1,7 +1,24 @@
-﻿import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 import * as fs from "fs";
 
 const namaList = ["Form of Transfer of Securites"];
+
+// Penalty rotation pattern (per 7 iterations):
+// 1=biasa, 2=penalti, 3=biasa, 4=penalti, 5=biasa, 6=biasa, 7=biasa
+// Ratio: 2 penalty : 5 biasa
+const PENALTY_PATTERN = [false, true, false, true, false, false, false];
+
+// Date used for "tarikh penalti" (January — old enough to trigger penalty)
+const PENALTY_DATE = "01/01/2026";
+
+// Format today's date as dd/MM/yyyy for "tarikh biasa"
+function getCurrentDate(): string {
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
 
 test("test", async ({ page }) => {
   // Clear browser cache and cookies before starting
@@ -23,7 +40,7 @@ test("test", async ({ page }) => {
   await page.getByRole("textbox", { name: "No. Pengenalan" }).click();
   await page
     .getByRole("textbox", { name: "No. Pengenalan" })
-    .fill("951004146116");
+    .fill("860125085432");
   await page.getByRole("button", { name: "Hantar" }).click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
@@ -33,7 +50,7 @@ test("test", async ({ page }) => {
     .click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
-    .fill("Password123");
+    .fill("Passw0rd");
   await page
     .getByText("Percubaan Log Masuk Anda : 0 /")
     .waitFor({ state: "visible", timeout: 10000 });
@@ -87,7 +104,12 @@ test("test", async ({ page }) => {
 
   // Loop 20 times starting from the stamping upload
   for (let i = 1; i <= 40; i++) {
-    console.log(`--- Loop iteration ${i} of XX ---`);
+    const isPenalty = PENALTY_PATTERN[(i - 1) % PENALTY_PATTERN.length];
+    const dateToUse = isPenalty ? PENALTY_DATE : getCurrentDate();
+    const docTitlePrefix = isPenalty ? "(PENALTY) " : "";
+    console.log(
+      `--- Loop iteration ${i} of XX --- [${isPenalty ? "PENALTI" : "BIASA"}] date=${dateToUse}`,
+    );
 
     await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
     //await page.locator('a[href="/stamping/upload"]').click();
@@ -116,34 +138,28 @@ test("test", async ({ page }) => {
     await page
       .locator("#DocTitleStep0")
       .fill(
-        `FOR BANTAHAN DAN RAYUAN (OBJECTION AND APPEAL ONLY). STRICLY DONT USE. ${i}`,
+        `${docTitlePrefix}FOR BANTAHAN DAN RAYUAN (OBJECTION AND APPEAL ONLY). STRICLY DONT USE. ${i}`,
       );
     await page
-      .locator("span.input-group-text.cursor-pointer")
+      .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
       .waitFor({ state: "visible", timeout: 10000 });
+    await page.getByRole("textbox", { name: "dd/MM/yyyy" }).first().click();
     await page
-      .locator("span.input-group-text.cursor-pointer")
+      .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
-      .click({ force: true });
-    await page.getByLabel("May 8,").first().click();
-    await page.getByRole("textbox", { name: "dd/MM/yyyy" }).fill("08/05/2026");
+      .fill(dateToUse);
+    await page
+      .getByRole("textbox", { name: "dd/MM/yyyy" })
+      .first()
+      .press("Enter");
+    await page.getByText("Tempat Surat Cara Ditandatangan*").click();
+
     await page.getByRole("radio", { name: "Luar Malaysia" }).check();
     await page.getByRole("radio", { name: "Malaysia", exact: true }).check();
     await page.getByRole("button", { name: "Seterusnya " }).click();
-    await page.getByText("1 Pihak Pertama Simpan").click();
-    await page.getByRole("button", { name: "OK" }).click();
-    await page
-      .locator(".collapse-body > div > div:nth-child(2)")
-      .first()
-      .click();
-    await page
-      .locator("#step1_div_nama_surat_cara")
-      .getByText("Nama Seperti Dalam Surat Cara*")
-      .click();
-    await page
-      .locator('input[name="StampingForm.FormAIndividualList[0].Name"]')
-      .click();
+    await page.waitForTimeout(3000);
+
     await page
       .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
       .check();
@@ -266,18 +282,30 @@ test("test", async ({ page }) => {
 
     await page.getByRole("textbox", { name: "0.00" }).fill(formattedAmount);
     await page.locator("#statusSelect").selectOption("3");
-    await page.getByRole("textbox").nth(3).click();
-    await page.getByRole("textbox").nth(3).fill("01/05/2026");
-    await page
-      .locator("#section2 > div > .input-group > .input-group-text")
+    // Wait for status change auto-prefill to settle
+    await page.waitForTimeout(1500);
+
+    const openCal = page.locator(".flatpickr-calendar.open");
+
+    // Mula: open calendar, pick the first enabled day in the currently shown month
+    await page.locator("#section2 input.js-acc-start").click();
+    await openCal.waitFor({ state: "visible", timeout: 10000 });
+    await openCal
+      .locator(
+        ".flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay)",
+      )
       .first()
       .click();
-    await page
-      .locator("#section2")
-      .getByText("Tempoh Perakaunan Tamat*")
-      .click();
-    await page.getByRole("textbox").nth(4).click();
-    await page.getByRole("textbox").nth(4).fill("07/05/2026");
+
+    // Tamat: open calendar, pick the 8th enabled day in the currently shown month
+    await page.locator("#section2 input.js-acc-end").click();
+    await openCal.waitFor({ state: "visible", timeout: 10000 });
+    const enabledEndDays = openCal.locator(
+      ".flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay)",
+    );
+    const enabledCount = await enabledEndDays.count();
+    const endIndex = Math.min(7, enabledCount - 1); // 8th enabled day, or last available
+    await enabledEndDays.nth(endIndex).click();
     await page.locator("#section2").getByText("Aset Tetap*").click();
     await page.locator("#section2 #StampingForm_formC_2_AssetFixed").click();
     await page
@@ -522,6 +550,7 @@ test("test", async ({ page }) => {
     await page.waitForTimeout(2000);
     await page
       .getByText("Tindakan - Taksiran Duti")
+      .nth(1)
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByText("Tindakan - Taksiran Duti").nth(1).click();
     await page
