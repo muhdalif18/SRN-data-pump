@@ -40,7 +40,7 @@
     "e2e-penalty:forever": "pm2 start ecosystem.config.cjs --only e2e-penalty-forever",
     "e2e-penalty:logs": "pm2 logs e2e-penalty-forever",
     "e2e-penalty:stop": "pm2 delete e2e-penalty-forever",
-    "e2e-combine-penalti-without-penalty:one": "playwright test \"tests/e2e-combine-penalti-without penalty.spec.ts\"",
+    "e2e-combine-penalti-without-penalty:one": "playwright test tests/e2e-combine-penalti-without-penalty.spec.ts",
     "e2e-combine-penalti-without-penalty:forever": "pm2 start ecosystem.config.cjs --only e2e-combine-penalti-without-penalty-forever",
     "e2e-combine-penalti-without-penalty:logs": "pm2 logs e2e-combine-penalti-without-penalty-forever",
     "e2e-combine-penalti-without-penalty:stop": "pm2 delete e2e-combine-penalti-without-penalty-forever",

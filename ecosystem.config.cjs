@@ -67,7 +67,7 @@ module.exports = {
     {
       name: "e2e-combine-penalti-without-penalty-forever",
       script: "cmd.exe",
-      args: "/c npx playwright test \"tests/e2e-combine-penalti-without penalty.spec.ts\"",
+      args: "/c npx playwright test tests/e2e-combine-penalti-without-penalty.spec.ts",
       autorestart: true,
       restart_delay: 15000,
       time: true,
