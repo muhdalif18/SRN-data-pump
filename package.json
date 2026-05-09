@@ -1,0 +1,43 @@
+{
+  "name": "ds7-automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "e2e:one": "playwright test tests/e2e.spec.ts",
+    "e2e:forever": "pm2 start ecosystem.config.cjs --only e2e-forever",
+    "e2e:logs": "pm2 logs e2e-forever",
+    "e2e:stop": "pm2 delete e2e-forever",
+    "login:one": "playwright test tests/login.spec.ts",
+    "login:forever": "pm2 start ecosystem.config.cjs --only login-forever",
+    "login:logs": "pm2 logs login-forever",
+    "login:stop": "pm2 delete login-forever",
+    "stamping-peranan-ejen-duti-setem:one": "playwright test tests/stamping-peranan-ejen-duti-setem.spec.ts",
+    "stamping-peranan-ejen-duti-setem:forever": "pm2 start ecosystem.config.cjs --only stamping-peranan-ejen-duti-setem-forever",
+    "stamping-peranan-ejen-duti-setem:logs": "pm2 logs stamping-peranan-ejen-duti-setem-forever",
+    "stamping-peranan-ejen-duti-setem:stop": "pm2 delete stamping-peranan-ejen-duti-setem-forever",
+    "stamping-peranan-ejen-firma-guaman:one": "playwright test tests/stamping-peranan-ejen-firma-guaman.spec.ts",
+    "stamping-peranan-ejen-firma-guaman:forever": "pm2 start ecosystem.config.cjs --only stamping-peranan-ejen-firma-guaman-forever",
+    "stamping-peranan-ejen-firma-guaman:logs": "pm2 logs stamping-peranan-ejen-firma-guaman-forever",
+    "stamping-peranan-ejen-firma-guaman:stop": "pm2 delete stamping-peranan-ejen-firma-guaman-forever",
+    "bots:status": "pm2 status"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.5",
+    "dotenv": "^17.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}

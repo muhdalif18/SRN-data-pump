@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  playwright:
+    build: .
+    volumes:
+      - ./test-data:/app/test-data
+      - ./playwright-report:/app/playwright-report
+    environment:
+      - CI=true
