@@ -1,24 +1,7 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import * as fs from "fs";
 
 const namaList = ["Form of Transfer of Securites"];
-
-// Penalty rotation pattern (per 7 iterations):
-// 1=biasa, 2=penalti, 3=biasa, 4=penalti, 5=biasa, 6=biasa, 7=biasa
-// Ratio: 2 penalty : 5 biasa
-const PENALTY_PATTERN = [false, true, false, true, false, false, false];
-
-// Date used for "tarikh penalti" (January — old enough to trigger penalty)
-const PENALTY_DATE = "01/01/2026";
-
-// Format today's date as dd/MM/yyyy for "tarikh biasa"
-function getCurrentDate(): string {
-  const d = new Date();
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
-}
 
 test("test", async ({ page }) => {
   // Clear browser cache and cookies before starting
@@ -40,7 +23,7 @@ test("test", async ({ page }) => {
   await page.getByRole("textbox", { name: "No. Pengenalan" }).click();
   await page
     .getByRole("textbox", { name: "No. Pengenalan" })
-    .fill("951004146116");
+    .fill("930413146704");
   await page.getByRole("button", { name: "Hantar" }).click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
@@ -75,48 +58,20 @@ test("test", async ({ page }) => {
   await page.getByRole("button", { name: "Ok" }).click();
   await page.waitForTimeout(5000);
 
-  await page
-    .getByText("Perkhidmatan ezHasil")
-    .waitFor({ state: "visible", timeout: 10000 });
-  await page.getByText("Perkhidmatan ezHasil").click();
-  await page
-    .getByText("Duti Setem 2.0 (UAT) e-Duti")
-    .waitFor({ state: "visible", timeout: 10000 });
-  await page.getByText("Duti Setem 2.0 (UAT) e-Duti").click();
-
-  // Wait for new tab to open when clicking e-Duti Setem
-  const [newPage] = await Promise.all([
-    page.context().waitForEvent("page"),
-    page.getByRole("link", { name: "e-Duti Setem" }).click(),
-  ]);
-
-  // Switch to the new tab
-  await newPage.waitForLoadState();
-  page = newPage;
-
-  await page.waitForTimeout(7000);
-
-  // Clear the URL log file before starting
-  fs.writeFileSync(
-    "./test-data/current-url-worker1.txt",
-    "Stamping Submission URLs\n========================\n\n",
-  );
-
-  // Write a run separator to the permanent log
-  const runTimestamp = new Date().toISOString();
-  fs.appendFileSync(
-    "./test-data/srn-permanent-log.txt",
-    `\n=== Run started: ${runTimestamp} ===\n`,
-  );
+  //CHANGE PERANAN
+  await page.getByText("Individu", { exact: true }).click();
+  await page.getByText("Firma Pengurusan").click();
+  await page.getByText("Firma Ejen Duti Kompaun").click();
+  const page1Promise = page.waitForEvent("popup");
+  await page.getByText("OSMAN FAKIR").click();
+  const page1 = await page1Promise;
+  await page1.waitForLoadState();
+  await page.bringToFront();
+  await page1.close();
 
   // Loop 20 times starting from the stamping upload
   for (let i = 1; i <= 40; i++) {
-    const isPenalty = PENALTY_PATTERN[(i - 1) % PENALTY_PATTERN.length];
-    const dateToUse = isPenalty ? PENALTY_DATE : getCurrentDate();
-    const docTitlePrefix = isPenalty ? "(PENALTY) " : "";
-    console.log(
-      `--- Loop iteration ${i} of XX --- [${isPenalty ? "PENALTI" : "BIASA"}] date=${dateToUse}`,
-    );
+    console.log(`--- Loop iteration ${i} of XX ---`);
 
     await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
     //await page.locator('a[href="/stamping/upload"]').click();
@@ -140,17 +95,11 @@ test("test", async ({ page }) => {
     await page
       .getByRole("option", { name: "DS 2: Pindah Milik Saham" })
       .click();
-    await page.waitForTimeout(5000);
-    await page
-      .getByText("Tempat Surat Cara Ditandatangan*")
-      .waitFor({ state: "visible", timeout: 10000 });
     await page.getByText("Tempat Surat Cara Ditandatangan*").click();
     await page.locator("#DocTitleStep0").click();
     await page
       .locator("#DocTitleStep0")
-      .fill(
-        `${docTitlePrefix}FOR BANTAHAN DAN RAYUAN (OBJECTION AND APPEAL ONLY). STRICLY DONT USE. ${i}`,
-      );
+      .fill(`Form of Transfer of Securites. ${i}`);
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
@@ -159,44 +108,116 @@ test("test", async ({ page }) => {
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
-      .fill(dateToUse);
+      .fill("08/05/2026");
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
       .press("Enter");
     await page.getByText("Tempat Surat Cara Ditandatangan*").click();
-
+    await expect(
+      page.getByRole("textbox", { name: "dd/MM/yyyy" }).first(),
+    ).toHaveValue("08/05/2026");
     await page.getByRole("radio", { name: "Luar Malaysia" }).check();
     await page.getByRole("radio", { name: "Malaysia", exact: true }).check();
-    await page.waitForTimeout(6000);
-    await page
-      .locator("button.nextBtn:has(span:text-is('Seterusnya'))")
-      .first()
-      .click({ force: true });
+    await page.getByRole("button", { name: "Seterusnya " }).click();
     await page.waitForTimeout(3000);
-
+    /*  await page.getByText("1 Pihak Pertama Simpan").click();
+    await page.getByRole("button", { name: "OK" }).click();
+    await page
+      .locator(".collapse-body > div > div:nth-child(2)")
+      .first()
+      .click();
+    await page
+      .locator("#step1_div_nama_surat_cara")
+      .getByText("Nama Seperti Dalam Surat Cara*")
+      .click();
+    await page
+      .locator('input[name="StampingForm.FormAIndividualList[0].Name"]')
+      .click(); */
     await page
       .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
       .check();
+    await page.waitForTimeout(3000);
     await page
-      .getByLabel("A. PIHAK PERTAMA")
-      .locator("div")
-      .filter({ hasText: /^Bandar$/ })
+      .locator('input[name="StampingForm.FormACompanyList[0].CompanyName"]')
+      .click();
+    await page.locator("#KategoriPembayarDuti").selectOption("4");
+    await page.waitForTimeout(2000);
+    await page
+      .locator(
+        'input[name="StampingForm.FormACompanyList[0].OldCompanyRegistrationNo"]',
+      )
       .click();
     await page
-      .getByLabel("A. PIHAK PERTAMA")
-      .locator("div")
-      .filter({ hasText: /^Negeri$/ })
+      .locator(
+        'input[name="StampingForm.FormACompanyList[0].OldCompanyRegistrationNo"]',
+      )
+      .fill("123456");
+    await page
+      .locator(
+        'input[name="StampingForm.FormACompanyList[0].OldCompanyRegistrationNo"]',
+      )
+      .press("Tab");
+    await page
+      .locator(
+        'input[name="StampingForm.FormACompanyList[0].NewCompanyRegistrationNo"]',
+      )
+      .fill("12345");
+    await page
+      .getByText(
+        "Nombor Pengenalan Cukai (TIN)* Nombor TIN syarikat berjaya dijumpai.",
+      )
       .click();
+    await page.getByRole("radio").nth(5).check();
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
+      .click();
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
+      .fill("0199184955");
+    await page.locator("#fld-email-com-0Step1").click();
+    await page.locator("#fld-email-com-0Step1").fill("test@gm");
+    await page.locator("#fld-email-com-0Step1").press("ControlOrMeta+a");
+    await page.locator("#fld-email-com-0Step1").fill("osman@gmail.com");
+    const randomCompanyAddr =
+      addresses[Math.floor(Math.random() * addresses.length)];
+
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR1"]')
+      .click();
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR1"]')
+      .fill(randomCompanyAddr.Addr1);
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR1"]')
+      .press("Tab");
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR2"]')
+      .fill(randomCompanyAddr.Addr2);
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR2"]')
+      .press("Tab");
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR3"]')
+      .fill(randomCompanyAddr.Addr3);
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR3"]')
+      .press("ControlOrMeta+b");
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].Postcode"]')
+      .click();
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].Postcode"]')
+      .fill("60000");
+    await page.waitForTimeout(5000);
+
     await page.getByRole("button", { name: "Seterusnya " }).click();
     await page
       .locator('input[name="StampingForm.FormBIndividualList[0].Name"]')
       .click();
     await page
       .locator('input[name="StampingForm.FormBIndividualList[0].Name"]')
-      .fill(
-        "SYED MUHAMAD ALIF BIN SYED MOHD BIN SYED JAMALUDIN BY SYED XAVIER BIN SYED ABU BAKAT BIN SYED ALONSO AL HAJ BIN SYED AL ATTAS BIN SYED SIRAJUDIN BIN SYED MIZAN ZAINAL ABIDIN BIN SYED ANUAR BIN SYED NAJIB BIN SYED AHMAD BIN SYED MASLAN BIN SYED ABU BAKAR BIN SYED AIMAN BIN SYED SYABIL BIN SYED AMIR BIN SYED HAFIS BIN SYED BHARATH",
-      );
+      .fill("FREDY MERCURY");
     await page.locator("#IsCitizen_0").selectOption("1");
     await page.locator("#isRoles1_0").check();
     await page
@@ -250,7 +271,6 @@ test("test", async ({ page }) => {
     await page
       .locator('input[name="StampingForm.FormBIndividualList[0].Postcode"]')
       .fill("50000");
-    await page.waitForTimeout(4000);
     await page
       .locator("div")
       .filter({ hasText: /^Bandar$/ })
@@ -264,9 +284,9 @@ test("test", async ({ page }) => {
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
     // Generate random numbers between 5-7 digits
-    const randomDigits = Math.floor(Math.random() * 3) + 4; // Random between 5-7
-    const minValue = Math.pow(4, randomDigits - 1);
-    const maxValue = Math.pow(4, randomDigits) - 1;
+    const randomDigits = Math.floor(Math.random() * 3) + 5; // Random between 5-7
+    const minValue = Math.pow(10, randomDigits - 1);
+    const maxValue = Math.pow(10, randomDigits) - 1;
     const randomNumber =
       Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
     const formattedNumber = randomNumber.toLocaleString("en-US");
@@ -286,8 +306,12 @@ test("test", async ({ page }) => {
     await page.getByRole("textbox", { name: "0.00" }).fill("00.01");
     await page.getByRole("textbox", { name: "0.00" }).press("ControlOrMeta+a");
 
-    // Generate random Ringgit Malaysia amount below 490,000
-    const randomAmount = Math.floor(Math.random() * (489999 - 1000 + 1)) + 1000;
+    // Generate random number between 10,000,000 - 20,000,000 with first 3 digits the same
+    const firstDigit = Math.floor(Math.random() * 9) + 1; // Random digit 1-9
+    const remainingDigits = Math.floor(Math.random() * 9000000) + 1000000; // Random 7 digits
+    const randomAmount = parseInt(
+      `${firstDigit}${firstDigit}${firstDigit}${remainingDigits.toString().substring(1)}`,
+    );
     const formattedAmount = randomAmount.toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -295,30 +319,18 @@ test("test", async ({ page }) => {
 
     await page.getByRole("textbox", { name: "0.00" }).fill(formattedAmount);
     await page.locator("#statusSelect").selectOption("3");
-    // Wait for status change auto-prefill to settle
-    await page.waitForTimeout(1500);
-
-    const openCal = page.locator(".flatpickr-calendar.open");
-
-    // Mula: open calendar, pick the first enabled day in the currently shown month
-    await page.locator("#section2 input.js-acc-start").click();
-    await openCal.waitFor({ state: "visible", timeout: 10000 });
-    await openCal
-      .locator(
-        ".flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay)",
-      )
+    await page.getByRole("textbox").nth(3).click();
+    await page.getByRole("textbox").nth(3).fill("01/05/2026");
+    await page
+      .locator("#section2 > div > .input-group > .input-group-text")
       .first()
       .click();
-
-    // Tamat: open calendar, pick the 8th enabled day in the currently shown month
-    await page.locator("#section2 input.js-acc-end").click();
-    await openCal.waitFor({ state: "visible", timeout: 10000 });
-    const enabledEndDays = openCal.locator(
-      ".flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay)",
-    );
-    const enabledCount = await enabledEndDays.count();
-    const endIndex = Math.min(7, enabledCount - 1); // 8th enabled day, or last available
-    await enabledEndDays.nth(endIndex).click();
+    await page
+      .locator("#section2")
+      .getByText("Tempoh Perakaunan Tamat*")
+      .click();
+    await page.getByRole("textbox").nth(4).click();
+    await page.getByRole("textbox").nth(4).fill("07/05/2026");
     await page.locator("#section2").getByText("Aset Tetap*").click();
     await page.locator("#section2 #StampingForm_formC_2_AssetFixed").click();
     await page
@@ -379,7 +391,6 @@ test("test", async ({ page }) => {
     await page.locator("#StampingForm_formC_2_CompAddr2").fill("sss");
     await page.locator("#StampingForm_formC_2_CompPostcode").click();
     await page.locator("#StampingForm_formC_2_CompPostcode").fill("60000");
-    await page.waitForTimeout(5000);
     await page
       .locator(
         "#collapse4_MaklumatSyarikatSahamYangDipindahMilik > .accordion-body > fieldset > .form-section > div > .bg-white > div:nth-child(2) > div:nth-child(3)",
@@ -400,13 +411,14 @@ test("test", async ({ page }) => {
     await page.getByText("Permohonan Peremitan /").click();
     await page.getByRole("button", { name: "Seterusnya " }).click();
     await page.getByRole("button", { name: "Seterusnya " }).click();
+    await page.waitForTimeout(2000);
+    await page.getByText("Wakil Pihak Pertama").click();
+    await page.waitForTimeout(2000);
+    await page.getByText("Diri Sendiri").click();
     await page
       .locator("label")
       .filter({ hasText: "Saya seperti nama dan Nombor" })
       .click();
-    await page
-      .getByRole("radio", { name: "Pihak Pertama", exact: true })
-      .check();
     await page.getByRole("button", { name: "Hantar " }).click();
     await page.getByRole("button", { name: "Batal" }).click();
     await page.getByRole("button", { name: "Hantar " }).click();
@@ -429,10 +441,6 @@ test("test", async ({ page }) => {
     fs.appendFileSync(
       "./test-data/current-url-worker1.txt",
       `SRN: ${srnValue}\n`,
-    );
-    fs.appendFileSync(
-      "./test-data/srn-permanent-log.txt",
-      `[${new Date().toISOString()}] Loop ${i} | SRN: ${srnValue} | ${isPenalty ? "PENALTI" : "BIASA"}\n`,
     );
 
     await page.getByRole("cell", { name: "LHDNM Proses" }).first().click();
@@ -473,10 +481,6 @@ test("test", async ({ page }) => {
     fs.appendFileSync(
       "./test-data/current-url-worker1.txt",
       `Nama Pemegang SRN: ${namaPemegangValue}\n`,
-    );
-    fs.appendFileSync(
-      "./test-data/srn-permanent-log.txt",
-      `[${new Date().toISOString()}] Loop ${i} | Nama: ${namaPemegangValue}\n`,
     );
 
     // Read JSON file to find user credentials
@@ -575,12 +579,11 @@ test("test", async ({ page }) => {
       .nth(1)
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByText("Tindakan - Taksiran Duti").nth(1).click();
-    await page.waitForTimeout(3000);
     await page
       .getByRole("button", { name: "Prebiu Notis" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: "Prebiu Notis" }).click();
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(2000);
 
     await page
       .locator("i.fa-times")
@@ -596,7 +599,6 @@ test("test", async ({ page }) => {
       .getByRole("button", { name: "Ya" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: "Ya" }).click();
-    await page.waitForTimeout(5000);
     await page
       .getByRole("link", { name: "Carian" })
       .waitFor({ state: "visible", timeout: 10000 });
@@ -625,7 +627,7 @@ test("test", async ({ page }) => {
 
     await page.getByRole("button", { name: "Ya" }).click();
 
-    await page.waitForTimeout(7000);
+    await page.waitForTimeout(3000);
     // Wait for Senarai Tindakan to appear
 
     await page
