@@ -5,7 +5,7 @@ module.exports = {
       script: "cmd.exe",
       args: "/c npx playwright test tests/e2e.spec.ts",
       autorestart: true,
-      restart_delay: 15000,
+      restart_delay: 10000,
       time: true,
     },
     {
@@ -13,7 +13,7 @@ module.exports = {
       script: "cmd.exe",
       args: "/c npx playwright test tests/login.spec.ts",
       autorestart: true,
-      restart_delay: 15000,
+      restart_delay: 10000,
       time: true,
     },
     {
@@ -21,7 +21,7 @@ module.exports = {
       script: "cmd.exe",
       args: "/c npx playwright test tests/stamping-peranan-ejen-duti-setem.spec.ts",
       autorestart: true,
-      restart_delay: 15000,
+      restart_delay: 10000,
       time: true,
     },
     {
@@ -29,7 +29,7 @@ module.exports = {
       script: "cmd.exe",
       args: "/c npx playwright test tests/stamping-peranan-ejen-firma-guaman.spec.ts",
       autorestart: true,
-      restart_delay: 15000,
+      restart_delay: 10000,
       time: true,
     },
     {
@@ -37,7 +37,7 @@ module.exports = {
       script: "cmd.exe",
       args: "/c npx playwright test tests/e2e-ejen-duti-setem.spec.ts",
       autorestart: true,
-      restart_delay: 15000,
+      restart_delay: 10000,
       time: true,
     },
     {
@@ -45,7 +45,7 @@ module.exports = {
       script: "cmd.exe",
       args: "/c npx playwright test tests/stamping.spec.ts",
       autorestart: true,
-      restart_delay: 15000,
+      restart_delay: 10000,
       time: true,
     },
     {
@@ -53,7 +53,7 @@ module.exports = {
       script: "cmd.exe",
       args: "/c npx playwright test tests/login2.spec.ts",
       autorestart: true,
-      restart_delay: 15000,
+      restart_delay: 10000,
       time: true,
     },
     {
@@ -61,7 +61,7 @@ module.exports = {
       script: "cmd.exe",
       args: "/c npx playwright test tests/e2e-penalty.spec.ts",
       autorestart: true,
-      restart_delay: 15000,
+      restart_delay: 10000,
       time: true,
     },
     {
@@ -69,7 +69,7 @@ module.exports = {
       script: "cmd.exe",
       args: "/c npx playwright test tests/e2e-combine-penalti-without-penalty.spec.ts",
       autorestart: true,
-      restart_delay: 15000,
+      restart_delay: 10000,
       time: true,
     },
     {
@@ -77,7 +77,7 @@ module.exports = {
       script: "cmd.exe",
       args: "/c npx playwright test tests/e2e-combine-penalti-without-penalty-worker2.spec.ts --output=test-results-worker2 --reporter=list",
       autorestart: true,
-      restart_delay: 15000,
+      restart_delay: 10000,
       time: true,
     }
   ],
