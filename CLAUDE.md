@@ -26,6 +26,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `npm run stamping-peranan-ejen-duti-setem:one`
   - `npm run stamping-peranan-ejen-firma-guaman:one`
   - `npm run e2e-ejen-duti-setem:one`
+  - `npm run stamping:one`
+  - `npm run login2:one`
+  - `npm run e2e-penalty:one`
+  - `npm run e2e-combine-penalti-without-penalty:one`
 
 - PM2 long-running jobs:
   - Start:
@@ -34,25 +38,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
     - `npm run stamping-peranan-ejen-duti-setem:forever`
     - `npm run stamping-peranan-ejen-firma-guaman:forever`
     - `npm run e2e-ejen-duti-setem:forever`
+    - `npm run stamping:forever`
+    - `npm run login2:forever`
+    - `npm run e2e-penalty:forever`
+    - `npm run e2e-combine-penalti-without-penalty:forever`
   - Logs:
     - `npm run e2e:logs`
     - `npm run login:logs`
     - `npm run stamping-peranan-ejen-duti-setem:logs`
     - `npm run stamping-peranan-ejen-firma-guaman:logs`
     - `npm run e2e-ejen-duti-setem:logs`
+    - `npm run stamping:logs`
+    - `npm run login2:logs`
+    - `npm run e2e-penalty:logs`
+    - `npm run e2e-combine-penalti-without-penalty:logs`
   - Stop:
     - `npm run e2e:stop`
     - `npm run login:stop`
     - `npm run stamping-peranan-ejen-duti-setem:stop`
     - `npm run stamping-peranan-ejen-firma-guaman:stop`
     - `npm run e2e-ejen-duti-setem:stop`
+    - `npm run stamping:stop`
+    - `npm run login2:stop`
+    - `npm run e2e-penalty:stop`
+    - `npm run e2e-combine-penalti-without-penalty:stop`
   - Status:
     - `npm run bots:status`
+  - Manage all bots:
+    - `npm run bots:all`
+    - `npm run bots:stop-all`
 
 - Docker path from README:
   - `docker run -v ${PWD}/test-data:/app/test-data matalep00/ds7-automation:latest`
   - With report output:
     - `docker run -v ${PWD}/test-data:/app/test-data -v ${PWD}/playwright-report:/app/playwright-report matalep00/ds7-automation:latest`
+  - Run specific test via docker-compose:
+    - `docker-compose run playwright npx playwright test <spec>`
 
 ## High-level architecture
 
@@ -63,7 +84,9 @@ This repository is a Playwright-driven browser automation suite for e-Duti workf
 - Core runtime is configured in `playwright.config.ts`.
 - Tests run serially (`workers: 1`, `fullyParallel: false`) and with long timeouts to support heavy end-to-end flows.
 - Browser is non-headless and configured to use the real maximized window (`viewport: null`, `--start-maximized`) to avoid layout compression/cutoff issues in UI-heavy pages.
-- `ecosystem.config.cjs` maps PM2 app names to specific spec files for persistent/restarting runs.
+- `ecosystem.config.cjs` maps PM2 app names to specific spec files for persistent/restarting runs, with `autorestart: true` and `restart_delay: 15000`.
+- `docker-compose.yml` sets `CI=true`, so Playwright uses CI behavior from `playwright.config.ts` (`retries: 2` instead of local `0`).
+- The Docker image default command in `Dockerfile` runs `npx playwright test login.spec.ts`.
 
 ### 2) Workflow style in specs
 
@@ -96,4 +119,4 @@ This repository is a Playwright-driven browser automation suite for e-Duti workf
   1. `ecosystem.config.cjs` (new PM2 app entry)
   2. `package.json` scripts (`:one`, `:forever`, `:logs`, `:stop`)
 - Keep selectors and waits resilient for long loops; this codebase is sensitive to UI timing and session continuity across iterations.
-- No `.cursor` rules, `.cursorrules`, or `.github/copilot-instructions.md` were found in this repository at time of writing.
+- No `.cursor/rules`, `.cursorrules`, or `.github/copilot-instructions.md` were found in this repository at time of writing.

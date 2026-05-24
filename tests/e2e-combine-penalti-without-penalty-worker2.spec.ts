@@ -1,6 +1,8 @@
 import { test } from "@playwright/test";
 import * as fs from "fs";
 
+test.use({ channel: "msedge", headless: true });
+
 const namaList = ["Form of Transfer of Securites"];
 
 // Penalty rotation pattern (per 7 iterations):
@@ -109,7 +111,7 @@ test("test", async ({ page }) => {
 
   // Clear the URL log file before starting
   fs.writeFileSync(
-    "./test-data/current-url-worker1.txt",
+    "./test-data/current-url-worker2.txt",
     "Stamping Submission URLs\n========================\n\n",
   );
 
@@ -160,7 +162,7 @@ test("test", async ({ page }) => {
     await page
       .locator("#DocTitleStep0")
       .fill(
-        `${docTitlePrefix}FOR BANTAHAN DAN RAYUAN (OBJECTION AND APPEAL ONLY). STRICLY DONT USE. ${i}`,
+        `${docTitlePrefix}W2FOR BANTAHAN DAN RAYUAN (OBJECTION AND APPEAL ONLY). STRICLY DONT USE. ${i}`,
       );
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
@@ -438,7 +440,7 @@ test("test", async ({ page }) => {
     const srnValue = srn?.trim() || "";
     console.log(`SRN: ${srnValue}`);
     fs.appendFileSync(
-      "./test-data/current-url-worker1.txt",
+      "./test-data/current-url-worker2.txt",
       `SRN: ${srnValue}\n`,
     );
     fs.appendFileSync(
@@ -482,7 +484,7 @@ test("test", async ({ page }) => {
     const namaPemegangValue = namaPemegang?.trim() || "";
     console.log(`Nama Pemegang SRN: ${namaPemegangValue}`);
     fs.appendFileSync(
-      "./test-data/current-url-worker1.txt",
+      "./test-data/current-url-worker2.txt",
       `Nama Pemegang SRN: ${namaPemegangValue}\n`,
     );
     fs.appendFileSync(
@@ -633,7 +635,7 @@ test("test", async ({ page }) => {
     const namaPemegangValueEndorse = namaPemegangEndorse?.trim() || "";
     console.log(`Nama Pemegang SRN (Endorsement): ${namaPemegangValueEndorse}`);
     fs.appendFileSync(
-      "./test-data/current-url-worker1.txt",
+      "./test-data/current-url-worker2.txt",
       `Nama Pemegang SRN (Endorsement): ${namaPemegangValueEndorse}\n`,
     );
     fs.appendFileSync(
@@ -648,11 +650,14 @@ test("test", async ({ page }) => {
 
     // Find the user by name
     const userEndorse: any = usersDataEndorse.find(
-      (row: any) => row.nama?.toUpperCase() === namaPemegangValueEndorse.toUpperCase(),
+      (row: any) =>
+        row.nama?.toUpperCase() === namaPemegangValueEndorse.toUpperCase(),
     );
 
     if (!userEndorse) {
-      throw new Error(`User credentials not found for endorsement: ${namaPemegangValueEndorse}`);
+      throw new Error(
+        `User credentials not found for endorsement: ${namaPemegangValueEndorse}`,
+      );
     }
 
     console.log(

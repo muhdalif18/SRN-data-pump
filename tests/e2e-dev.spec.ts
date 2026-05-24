@@ -6,18 +6,8 @@ const namaList = ["Form of Transfer of Securites"];
 // Penalty rotation pattern (per 7 iterations):
 // 1=biasa, 2=penalti, 3=biasa, 4=penalti, 5=biasa, 6=biasa, 7=biasa
 // Ratio: 2 penalty : 5 biasa
-const PENALTY_PATTERN = [
-  false,
-  true,
-  false,
-  true,
-  false,
-  true,
-  false,
-  true,
-  false,
-  true,
-];
+//const PENALTY_PATTERN = [false, true, false, true, false, false, false];
+const PENALTY_PATTERN = [true, true, true, true, true, true, true];
 
 // Date used for "tarikh penalti" (January — old enough to trigger penalty)
 const PENALTY_DATE = "01/01/2026";
@@ -91,9 +81,13 @@ test("test", async ({ page }) => {
     .waitFor({ state: "visible", timeout: 10000 });
   await page.getByText("Perkhidmatan ezHasil").click();
   await page
+    .getByText("Duti Setem (DEV)")
+    .waitFor({ state: "visible", timeout: 10000 });
+  await page.getByText("Duti Setem (DEV)").click();
+  /*  await page
     .getByText("Duti Setem 2.0 (UAT) e-Duti")
     .waitFor({ state: "visible", timeout: 10000 });
-  await page.getByText("Duti Setem 2.0 (UAT) e-Duti").click();
+  await page.getByText("Duti Setem 2.0 (UAT) e-Duti").click(); */
 
   // Wait for new tab to open when clicking e-Duti Setem
   const [newPage] = await Promise.all([
@@ -129,7 +123,8 @@ test("test", async ({ page }) => {
       `--- Loop iteration ${i} of XX --- [${isPenalty ? "PENALTI" : "BIASA"}] date=${dateToUse}`,
     );
 
-    await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
+    //await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
+    await page.goto("https://eds-dev.hasil.gov.my/stamping/upload");
     //await page.locator('a[href="/stamping/upload"]').click();
     await page.waitForTimeout(5000);
     await page
@@ -426,7 +421,8 @@ test("test", async ({ page }) => {
     await page
       .getByRole("button", { name: "Kembali ke Paparan Utama" })
       .click();
-    await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
+    //await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
+    await page.goto("https://eds-dev.hasil.gov.my/Home/Index");
     await page.getByRole("heading", { name: "Senarai Permohonan" }).click();
 
     // Extract and log the SRN
@@ -449,13 +445,14 @@ test("test", async ({ page }) => {
     await page.getByRole("cell", { name: "LHDNM Proses" }).first().click();
 
     //HITS SIDE
-    await page.goto("https://hitspre2.hasil.gov.my/Dashboard/Login");
+    await page.goto("https://hitsdev.hasil.gov.my/Dashboard/Login");
+    // await page.goto("https://hitspre2.hasil.gov.my/Dashboard/Login");
     await page.locator(".login-screen").click();
     await page.locator("#Input_UsernameVal").click();
-    await page.locator("#Input_UsernameVal").fill("userstds11@hasil.gov.my");
+    await page.locator("#Input_UsernameVal").fill("userstds10@hasil.gov.my");
     await page.locator("#Input_UsernameVal").click();
     await page.locator("#Input_PasswordVal").click();
-    await page.locator("#Input_PasswordVal").fill("990101019011");
+    await page.locator("#Input_PasswordVal").fill("990101019010");
     await page.getByRole("button", { name: "Login" }).click();
     await page.getByRole("link", { name: "Duti Setem " }).click();
     await page.getByRole("link", { name: "Taksiran Duti Setem" }).click();
@@ -570,7 +567,7 @@ test("test", async ({ page }) => {
     await page
       .getByRole("button", { name: "Sedia Untuk Taksiran Duti" })
       .click();
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(4000);
     await page
       .getByText("Pengesahan Tindakan")
       .waitFor({ state: "visible", timeout: 10000 });
@@ -580,7 +577,7 @@ test("test", async ({ page }) => {
       .getByRole("button", { name: "Ya" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: "Ya" }).click();
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(3000);
     await page
       .getByText("Tindakan - Taksiran Duti")
       .nth(1)
@@ -622,77 +619,9 @@ test("test", async ({ page }) => {
       .getByRole("button", { name: " Cari" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: " Cari" }).click();
-    await page.waitForTimeout(3000);
-
-    // Capture Nama Pemegang SRN for endorsement
     await page.waitForTimeout(2000);
-    const namaPemegangElementEndorse = await page.locator(
-      'div.columns-item:has-text("Nama Pemegang SRN") + div.columns-item span[data-expression][style*="font-weight: bold"]',
-    );
-    const namaPemegangEndorse = await namaPemegangElementEndorse.textContent();
-    const namaPemegangValueEndorse = namaPemegangEndorse?.trim() || "";
-    console.log(`Nama Pemegang SRN (Endorsement): ${namaPemegangValueEndorse}`);
-    fs.appendFileSync(
-      "./test-data/current-url-worker1.txt",
-      `Nama Pemegang SRN (Endorsement): ${namaPemegangValueEndorse}\n`,
-    );
-    fs.appendFileSync(
-      "./test-data/srn-permanent-log.txt",
-      `[${new Date().toISOString()}] Loop ${i} | Endorsement Nama: ${namaPemegangValueEndorse}\n`,
-    );
-
-    // Read JSON file to find user credentials for endorsement
-    const usersDataEndorse = JSON.parse(
-      fs.readFileSync("./test-data/users_pre2.json", "utf-8"),
-    );
-
-    // Find the user by name
-    const userEndorse: any = usersDataEndorse.find(
-      (row: any) => row.nama?.toUpperCase() === namaPemegangValueEndorse.toUpperCase(),
-    );
-
-    if (!userEndorse) {
-      throw new Error(`User credentials not found for endorsement: ${namaPemegangValueEndorse}`);
-    }
-
-    console.log(
-      `Found user credentials for endorsement - Username: ${userEndorse.loginId}`,
-    );
-
-    // Logout from HITS
-    await page.locator(".submenu-icon").click();
-    await page.getByRole("link", { name: " Log Keluar" }).click();
-    await page.waitForTimeout(5000);
-
-    // Login again with the endorsement user's credentials
-    await page
-      .locator("#Input_UsernameVal")
-      .waitFor({ state: "visible", timeout: 10000 });
-    await page.locator("#Input_UsernameVal").click();
-    await page.locator("#Input_UsernameVal").fill(userEndorse.loginId);
-    await page.locator("#Input_PasswordVal").click();
-    await page.locator("#Input_PasswordVal").fill(userEndorse.password);
-    await page.getByRole("button", { name: "Login" }).click();
-    await page.waitForTimeout(5000);
-
-    await page.getByRole("link", { name: "Duti Setem " }).click();
-    await page.waitForTimeout(2000);
-    await page.getByRole("link", { name: "Taksiran Duti Setem" }).click();
-    await page.waitForTimeout(5000);
-    await page
-      .getByRole("link", { name: "Carian" })
-      .waitFor({ state: "visible", timeout: 10000 });
-    await page.getByRole("link", { name: "Carian" }).click();
-    await page.waitForTimeout(2000);
-    await page.getByRole("radio", { name: "No TIN" }).check();
-    await page.getByRole("radio", { name: "No. Rujukan Setem" }).check();
-    await page.getByPlaceholder(" ").click();
-    await page.getByPlaceholder(" ").fill(srnValue);
-    await page.getByRole("button", { name: " Cari" }).click();
-    await page.waitForTimeout(3000);
-
     await page.getByRole("link", { name: "-", exact: true }).click();
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(5000);
     await page.getByText("Tidak Indors").click();
     await page.getByText("Indors", { exact: true }).click();
     await page.getByRole("button", { name: "Hantar" }).click();

@@ -1,14 +1,6 @@
 Stamping Submission URLs
 ========================
 
-SRN: 9992643705852003
-Nama Pemegang SRN: USER STDS Pahang 7
-SRN: 9992620323691768
-Nama Pemegang SRN: USER STDS Pahang 4
-SRN: 9992697590759341
-Nama Pemegang SRN: USER STDS Pahang 7
-SRN: 9992662860691084
-Nama Pemegang SRN: USER STDS Pahang 4
-SRN: 9992679225017509
-Nama Pemegang SRN: USER STDS Pahang 7
-SRN: 9992627745718992
+SRN: 9992622977797558
+Nama Pemegang SRN: USER STDS 24
+Nama Pemegang SRN (Endorsement): USER STDS 31

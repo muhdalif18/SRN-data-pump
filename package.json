@@ -44,6 +44,12 @@
     "e2e-combine-penalti-without-penalty:forever": "pm2 start ecosystem.config.cjs --only e2e-combine-penalti-without-penalty-forever",
     "e2e-combine-penalti-without-penalty:logs": "pm2 logs e2e-combine-penalti-without-penalty-forever",
     "e2e-combine-penalti-without-penalty:stop": "pm2 delete e2e-combine-penalti-without-penalty-forever",
+    "e2e-combine-penalti-without-penalty-worker2:one": "playwright test tests/e2e-combine-penalti-without-penalty-worker2.spec.ts --output=test-results-worker2 --reporter=list",
+    "e2e-combine-penalti-without-penalty-worker2:forever": "pm2 start ecosystem.config.cjs --only e2e-combine-penalti-without-penalty-worker2-forever",
+    "e2e-combine-penalti-without-penalty-worker2:logs": "pm2 logs e2e-combine-penalti-without-penalty-worker2-forever",
+    "e2e-combine-penalti-without-penalty-worker2:stop": "pm2 delete e2e-combine-penalti-without-penalty-worker2-forever",
+    "e2e-combine-penalti-without-penalty:staggered": "pm2 start ecosystem.config.cjs --only e2e-combine-penalti-without-penalty-forever && node -e \"setTimeout(() => process.exit(0), 60000)\" && pm2 start ecosystem.config.cjs --only e2e-combine-penalti-without-penalty-worker2-forever",
+    "e2e-combine-penalti-without-penalty:stop-both": "pm2 delete e2e-combine-penalti-without-penalty-forever e2e-combine-penalti-without-penalty-worker2-forever",
     "bots:all": "pm2 start ecosystem.config.cjs",
     "bots:stop-all": "pm2 delete ecosystem.config.cjs",
     "bots:status": "pm2 status"
