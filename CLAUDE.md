@@ -30,6 +30,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `npm run login2:one`
   - `npm run e2e-penalty:one`
   - `npm run e2e-combine-penalti-without-penalty:one`
+  - `npm run srn-pump-latest:one`
 
 - PM2 long-running jobs:
   - Start:
@@ -42,6 +43,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
     - `npm run login2:forever`
     - `npm run e2e-penalty:forever`
     - `npm run e2e-combine-penalti-without-penalty:forever`
+    - `npm run srn-pump-latest:forever`
   - Logs:
     - `npm run e2e:logs`
     - `npm run login:logs`
@@ -52,6 +54,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
     - `npm run login2:logs`
     - `npm run e2e-penalty:logs`
     - `npm run e2e-combine-penalti-without-penalty:logs`
+    - `npm run srn-pump-latest:logs`
   - Stop:
     - `npm run e2e:stop`
     - `npm run login:stop`
@@ -62,6 +65,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
     - `npm run login2:stop`
     - `npm run e2e-penalty:stop`
     - `npm run e2e-combine-penalti-without-penalty:stop`
+    - `npm run srn-pump-latest:stop`
   - Status:
     - `npm run bots:status`
   - Manage all bots:
