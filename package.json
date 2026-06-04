@@ -58,6 +58,10 @@
     "srn-pump-latest:forever": "pm2 start ecosystem.config.cjs --only srn-pump-latest-forever",
     "srn-pump-latest:logs": "pm2 logs srn-pump-latest-forever",
     "srn-pump-latest:stop": "pm2 delete srn-pump-latest-forever",
+    "srn-pump-peranan:one": "playwright test tests/SRN-pump-peranan.spec.ts",
+    "srn-pump-peranan:forever": "pm2 start ecosystem.config.cjs --only srn-pump-peranan-forever",
+    "srn-pump-peranan:logs": "pm2 logs srn-pump-peranan-forever",
+    "srn-pump-peranan:stop": "pm2 delete srn-pump-peranan-forever",
     "bots:all": "pm2 start ecosystem.config.cjs",
     "bots:stop-all": "pm2 delete ecosystem.config.cjs",
     "bots:status": "pm2 status"

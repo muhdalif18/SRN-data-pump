@@ -87,6 +87,14 @@ module.exports = {
       autorestart: true,
       restart_delay: 10000,
       time: true,
+    },
+    {
+      name: "srn-pump-peranan-forever",
+      script: "cmd.exe",
+      args: '/c npx playwright test tests/SRN-pump-peranan.spec.ts',
+      autorestart: true,
+      restart_delay: 10000,
+      time: true,
     }
   ],
 };
