@@ -103,6 +103,22 @@ module.exports = {
       autorestart: true,
       restart_delay: 10000,
       time: true,
+    },
+    {
+      name: "srn-pump-latest-dikecualiakn-forever",
+      script: "cmd.exe",
+      args: "/c npx playwright test tests/SRN-PUMP-LATEST-DIKECUALIAKN.spec.ts",
+      autorestart: true,
+      restart_delay: 10000,
+      time: true,
+    },
+    {
+      name: "srn-pump-latest-dikecualiakn-optimized-forever",
+      script: "cmd.exe",
+      args: "/c npx playwright test tests/SRN-PUMP-LATEST-DIKECUALIAKN-OPTIMIZED.spec.ts",
+      autorestart: true,
+      restart_delay: 10000,
+      time: true,
     }
   ],
 };
