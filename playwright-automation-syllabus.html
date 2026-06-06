@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Playwright Automation Learning Syllabus</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+      color: #222;
+      max-width: 900px;
+      margin: 0 auto;
+      font-size: 11pt;
+    }
+    h1 {
+      color: #0b3d91;
+      border-bottom: 3px solid #0b3d91;
+      padding-bottom: 8px;
+      font-size: 26pt;
+    }
+    h2 {
+      color: #154c9f;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+      margin-top: 28px;
+      font-size: 18pt;
+      page-break-after: avoid;
+    }
+    h3 {
+      color: #333;
+      margin-top: 20px;
+      font-size: 14pt;
+      page-break-after: avoid;
+    }
+    code {
+      font-family: Consolas, Monaco, monospace;
+      background: #f4f4f4;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    pre {
+      background: #f7f7f7;
+      border: 1px solid #ddd;
+      border-left: 4px solid #0b3d91;
+      padding: 10px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+      font-size: 9.5pt;
+    }
+    pre code { background: transparent; padding: 0; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 4px 0; }
+    .cover {
+      text-align: center;
+      margin-top: 120px;
+      page-break-after: always;
+    }
+    .cover h1 {
+      border-bottom: none;
+      font-size: 32pt;
+      color: #0b3d91;
+    }
+    .subtitle {
+      font-size: 16pt;
+      color: #555;
+      margin-top: 20px;
+    }
+    .meta {
+      margin-top: 60px;
+      color: #666;
+      font-size: 11pt;
+    }
+    .box {
+      background: #eef5ff;
+      border-left: 4px solid #0b3d91;
+      padding: 12px;
+      margin: 16px 0;
+      page-break-inside: avoid;
+    }
+    .warning {
+      background: #fff7e6;
+      border-left: 4px solid #e69500;
+      padding: 12px;
+      margin: 16px 0;
+      page-break-inside: avoid;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      page-break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f0f4fb; }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <h1>Playwright Automation Learning Syllabus</h1>
+    <div class="subtitle">Step-by-step guide for learning and maintaining the DS7 Automation project</div>
+    <div class="meta">Repository: DS7 Automation<br/>Generated for Playwright browser automation learning</div>
+  </div>
+
+  <h1>Playwright Automation Learning Syllabus</h1>
+
+  <div class="box">
+    <strong>Goal:</strong> By the end of this syllabus, you should be able to understand this DS7 automation repository, run existing Playwright scripts, debug failures, modify selectors and waits, add new automation flows, run PM2 long-running jobs, and maintain SRN/logging workflows safely.
+  </div>
+
+  <h2>Phase 1 — Basic Foundations</h2>
+
+  <h3>1. Learn what browser automation is</h3>
+  <p>Browser automation means controlling Chrome, Edge, or Firefox with code. Playwright can open pages, click buttons, fill forms, wait for UI elements, upload files, read URLs, take screenshots/videos/traces, and run tests repeatedly.</p>
+
+  <h3>Key terms</h3>
+  <ul>
+    <li>Test spec</li>
+    <li>Locator</li>
+    <li>Selector</li>
+    <li>Browser context</li>
+    <li>Page</li>
+    <li>Headed vs headless</li>
+    <li>Assertion</li>
+    <li>Timeout</li>
+    <li>Trace</li>
+    <li>Screenshot</li>
+    <li>Retry</li>
+  </ul>
+
+  <h3>First Playwright pattern</h3>
+  <pre><code>import { test, expect } from "@playwright/test";
+
+test("basic example", async ({ page }) =&gt; {
+  await page.goto("https://example.com");
+  await expect(page).toHaveTitle(/Example/);
+});</code></pre>
+
+  <h2>Phase 2 — Install and Run the Project</h2>
+
+  <h3>2. Understand the project setup</h3>
+  <p>This repo is a Playwright project using TypeScript, Playwright Test, PM2 for long-running/restarting jobs, Docker support, and input/output data from <code>test-data/</code>.</p>
+
+  <table>
+    <tr><th>File or folder</th><th>Purpose</th></tr>
+    <tr><td><code>package.json</code></td><td>Commands and scripts</td></tr>
+    <tr><td><code>playwright.config.ts</code></td><td>Playwright runtime config</td></tr>
+    <tr><td><code>ecosystem.config.cjs</code></td><td>PM2 bot config</td></tr>
+    <tr><td><code>tests/</code></td><td>Automation specs</td></tr>
+    <tr><td><code>test-data/</code></td><td>Input/output data files</td></tr>
+    <tr><td><code>README.md</code></td><td>Docker and run notes</td></tr>
+    <tr><td><code>CLAUDE.md</code></td><td>Repository guidance for Claude Code</td></tr>
+  </table>
+
+  <h3>3. Install dependencies</h3>
+  <pre><code>npm install
+npx playwright install --with-deps</code></pre>
+
+  <p>If only using Chromium locally:</p>
+  <pre><code>npx playwright install chromium</code></pre>
+
+  <h3>4. Run all tests</h3>
+  <pre><code>npm test</code></pre>
+  <p>In this repository, all tests may be long and depend on live systems, so usually you run one spec.</p>
+
+  <h3>5. Run one spec</h3>
+  <pre><code>npm run login:one
+npm run e2e:one
+npm run srn-dev:one</code></pre>
+  <p>Or run directly:</p>
+  <pre><code>npx playwright test tests/login.spec.ts</code></pre>
+
+  <h2>Phase 3 — Learn Playwright Core API</h2>
+
+  <h3>6. Navigation</h3>
+  <pre><code>await page.goto("https://example.com");
+await page.waitForLoadState();
+await page.waitForTimeout(3000);</code></pre>
+  <p>This repo uses many fixed waits because the live systems can be slow or unpredictable.</p>
+
+  <h3>7. Locators</h3>
+  <pre><code>page.getByRole("button", { name: "Hantar" })
+page.getByRole("textbox", { name: "No. Pengenalan" })
+page.getByText("Perkhidmatan ezHasil")
+page.locator("#fileInput_single")</code></pre>
+
+  <p>Recommended locator priority:</p>
+  <ol>
+    <li><code>getByRole</code></li>
+    <li><code>getByLabel</code></li>
+    <li><code>getByText</code></li>
+    <li><code>locator()</code> with stable IDs/classes</li>
+    <li>XPath only if necessary</li>
+  </ol>
+
+  <h3>8. Filling forms</h3>
+  <pre><code>await page.getByRole("textbox", { name: "No. Pengenalan" }).fill("860125085432");
+await page.getByRole("combobox").selectOption("1");
+await page.getByRole("button", { name: "Hantar" }).click();</code></pre>
+
+  <h3>9. Waits</h3>
+  <pre><code>await page.getByText("Some text").waitFor({ state: "visible", timeout: 10000 });
+await page.waitForTimeout(5000);
+await page.waitForLoadState();</code></pre>
+
+  <p>Better style when possible:</p>
+  <pre><code>const button = page.getByRole("button", { name: "Faham" });
+await button.waitFor({ state: "visible", timeout: 10000 });
+await button.click();</code></pre>
+
+  <h2>Phase 4 — Understand This Repo’s Automation Flow</h2>
+
+  <h3>10. Main workflow</h3>
+  <ol>
+    <li>Clear browser cache/cookies.</li>
+    <li>Load input data from <code>test-data/</code>.</li>
+    <li>Go to MyTax dev URL.</li>
+    <li>Log in.</li>
+    <li>Navigate to e-Duti Setem.</li>
+    <li>New tab opens.</li>
+    <li>Switch to new tab.</li>
+    <li>Go to stamping upload page.</li>
+    <li>Upload document.</li>
+    <li>Fill stamping form.</li>
+    <li>Submit.</li>
+    <li>Extract SRN from URL/page.</li>
+    <li>Save SRN and URL into log files.</li>
+    <li>Repeat in a loop.</li>
+    <li>Some specs continue to HITS for follow-up processing.</li>
+  </ol>
+
+  <h3>New tab pattern</h3>
+  <pre><code>const [newPage] = await Promise.all([
+  page.context().waitForEvent("page"),
+  page.getByRole("link", { name: "e-Duti Setem" }).click(),
+]);
+
+await newPage.waitForLoadState();
+page = newPage;</code></pre>
+
+  <h3>11. Important systems</h3>
+  <ul>
+    <li><strong>MyTax:</strong> Starting login portal. Base URL: <code>https://mytax-dev.hasil.gov.my/web/</code></li>
+    <li><strong>e-Duti / EDS:</strong> Stamping submission creation. Typical URL: <code>https://eds-uat.hasil.gov.my/stamping/upload</code></li>
+    <li><strong>HITS:</strong> Follow-up actions after SRN creation in some specs.</li>
+  </ul>
+
+  <h2>Phase 5 — Understand Project Files</h2>
+
+  <h3>12. Important config files</h3>
+  <p><strong><code>playwright.config.ts</code></strong> key settings:</p>
+  <pre><code>timeout: 770000
+fullyParallel: false
+workers: 1
+headless: false
+viewport: null
+screenshot: "only-on-failure"
+video: "retain-on-failure"
+trace: "retain-on-failure"</code></pre>
+
+  <p>Meaning: tests are long-running, one worker by default, browser is visible and maximized, and debug artifacts are saved on failure.</p>
+
+  <p><strong><code>ecosystem.config.cjs</code></strong> is used by PM2 for forever/restarting runs:</p>
+  <pre><code>{
+  name: "srn-dev-forever",
+  script: "cmd.exe",
+  args: "/c npx playwright test tests/SRN_dev.spec.ts",
+  autorestart: true,
+  restart_delay: 10000,
+  time: true,
+}</code></pre>
+
+  <h2>Phase 6 — Learn Test Data and Logging</h2>
+
+  <h3>13. Input files</h3>
+  <ul>
+    <li><code>addresses_my.json</code></li>
+    <li><code>users_pre2.json</code></li>
+    <li><code>userstds (2).xlsx</code></li>
+    <li><code>image (19).png</code></li>
+  </ul>
+
+  <pre><code>const addressesData = JSON.parse(
+  fs.readFileSync("./test-data/addresses_my.json", "utf-8"),
+);</code></pre>
+
+  <h3>14. Output files</h3>
+  <ul>
+    <li><code>test-data/current-url-worker1.txt</code></li>
+    <li><code>test-data/current-url-worker2.txt</code></li>
+    <li><code>test-data/current-url.txt</code></li>
+    <li><code>test-data/srn-permanent-log.txt</code></li>
+  </ul>
+
+  <h3>15. File writing</h3>
+  <pre><code>fs.writeFileSync("./test-data/current-url-worker1.txt", "Header\n");
+fs.appendFileSync("./test-data/srn-permanent-log.txt", srn + "\n");</code></pre>
+
+  <div class="warning"><strong>Important:</strong> <code>writeFileSync()</code> overwrites files. <code>appendFileSync()</code> adds to files. Be careful not to erase permanent logs accidentally.</div>
+
+  <h2>Phase 7 — Debugging Playwright Failures</h2>
+
+  <h3>16. Common failure types</h3>
+  <ul>
+    <li><strong>Selector not found:</strong> button/text changed, page did not load, wrong role/account, modal blocked the page, or session expired.</li>
+    <li><strong>Navigation failed:</strong> network issue, backend slowness, authentication failure, or environment down.</li>
+    <li><strong>Upload failed:</strong> file missing, selector changed, file input hidden/changed.</li>
+    <li><strong>New tab not captured:</strong> <code>waitForEvent("page")</code> must happen before or at the same time as the click.</li>
+  </ul>
+
+  <h3>17. Use Playwright report</h3>
+  <pre><code>npm run report</code></pre>
+  <p>Look for screenshot, video, trace, error stack, and failed locator.</p>
+
+  <h3>18. Use trace viewer</h3>
+  <pre><code>npx playwright show-trace test-results/&lt;trace-file&gt;.zip</code></pre>
+
+  <h2>Phase 8 — Learn Maintenance Skills</h2>
+
+  <h3>19. Updating selectors</h3>
+  <pre><code>await page.getByRole("button", { name: /Hantar|Submit/ }).click();</code></pre>
+
+  <h3>20. Improving waits</h3>
+  <pre><code>await page.getByRole("button", { name: "Faham" }).waitFor({
+  state: "visible",
+  timeout: 10000,
+});</code></pre>
+
+  <h3>21. Handling optional modals</h3>
+  <pre><code>const modalButton = page.getByRole("button", { name: "Ok" });
+
+if (await modalButton.isVisible().catch(() =&gt; false)) {
+  await modalButton.click();
+}</code></pre>
+
+  <h3>22. Working with loops</h3>
+  <pre><code>for (let i = 1; i &lt;= 40; i++) {
+  console.log(`--- Loop iteration ${i} ---`);
+}</code></pre>
+  <p>When debugging, temporarily reduce loop count to 1, then restore it after testing.</p>
+
+  <h2>Phase 9 — Learn Role-Specific Specs</h2>
+
+  <h3>23. Recommended study order</h3>
+  <ol>
+    <li><strong>Beginner:</strong> <code>tests/login.spec.ts</code>, <code>tests/login2.spec.ts</code></li>
+    <li><strong>Intermediate:</strong> <code>tests/stamping.spec.ts</code>, <code>tests/e2e.spec.ts</code></li>
+    <li><strong>Advanced:</strong> <code>tests/e2e-penalty.spec.ts</code>, <code>tests/e2e-combine-penalti-without-penalty.spec.ts</code>, <code>tests/e2e-combine-penalti-without-penalty-worker2.spec.ts</code></li>
+    <li><strong>Specialist:</strong> <code>tests/SRN-PUMP-LATEST.spec.ts</code>, <code>tests/SRN-pump-peranan.spec.ts</code>, <code>tests/SRN_dev.spec.ts</code></li>
+  </ol>
+
+  <h2>Phase 10 — Learn PM2 Long-Running Automation</h2>
+
+  <h3>24–29. PM2 commands</h3>
+  <pre><code>npm run srn-dev:forever
+npm run srn-dev:logs
+npm run srn-dev:stop
+npm run bots:status
+npm run bots:all
+npm run bots:stop-all</code></pre>
+
+  <div class="warning"><strong>Be careful:</strong> <code>bots:all</code> may start many live automation jobs.</div>
+
+  <h2>Phase 11 — Worker1 / Worker2 Parallel Strategy</h2>
+
+  <ul>
+    <li>Worker1 usually writes to <code>test-data/current-url-worker1.txt</code>.</li>
+    <li>Worker2 writes to <code>test-data/current-url-worker2.txt</code>.</li>
+    <li>Worker2 runs with Edge, headless mode, and output to <code>test-results-worker2</code>.</li>
+  </ul>
+
+  <pre><code>npm run e2e-combine-penalti-without-penalty-worker2:one
+npm run e2e-combine-penalti-without-penalty:staggered</code></pre>
+
+  <p>The staggered command starts worker1, waits 60 seconds, then starts worker2 to reduce account/session collision and backend load.</p>
+
+  <h2>Phase 12 — Adding a New Automation Spec</h2>
+
+  <ol>
+    <li>Copy a similar spec.</li>
+    <li>Rename carefully, for example <code>tests/new-flow.spec.ts</code>.</li>
+    <li>Add package scripts.</li>
+    <li>Add PM2 config.</li>
+    <li>Test one run first.</li>
+  </ol>
+
+  <h3>Package scripts example</h3>
+  <pre><code>"new-flow:one": "playwright test tests/new-flow.spec.ts",
+"new-flow:forever": "pm2 start ecosystem.config.cjs --only new-flow-forever",
+"new-flow:logs": "pm2 logs new-flow-forever",
+"new-flow:stop": "pm2 delete new-flow-forever"</code></pre>
+
+  <h3>PM2 config example</h3>
+  <pre><code>{
+  name: "new-flow-forever",
+  script: "cmd.exe",
+  args: "/c npx playwright test tests/new-flow.spec.ts",
+  autorestart: true,
+  restart_delay: 10000,
+  time: true,
+}</code></pre>
+
+  <h2>Phase 13 — Practical 14-Day Learning Plan</h2>
+
+  <table>
+    <tr><th>Day</th><th>Focus</th><th>Goal</th></tr>
+    <tr><td>1</td><td>Setup</td><td>Install dependencies, run <code>login:one</code>, read <code>playwright.config.ts</code>.</td></tr>
+    <tr><td>2</td><td>Playwright basics</td><td>Learn <code>page.goto</code>, click, fill, locators, waits.</td></tr>
+    <tr><td>3</td><td>Login specs</td><td>Study <code>login.spec.ts</code> and <code>login2.spec.ts</code>.</td></tr>
+    <tr><td>4</td><td>New tabs</td><td>Understand <code>page.context().waitForEvent("page")</code>.</td></tr>
+    <tr><td>5</td><td>Stamping flow</td><td>Study <code>stamping.spec.ts</code> and <code>e2e.spec.ts</code>.</td></tr>
+    <tr><td>6</td><td>Test data</td><td>Understand JSON, Excel, and upload file usage.</td></tr>
+    <tr><td>7</td><td>Logs and SRNs</td><td>Understand URL/SRN output files.</td></tr>
+    <tr><td>8</td><td>Debugging</td><td>Use report and trace viewer.</td></tr>
+    <tr><td>9</td><td>Penalty workflows</td><td>Study penalty date vs current date behavior.</td></tr>
+    <tr><td>10</td><td>Worker2</td><td>Understand Edge/headless parallel worker behavior.</td></tr>
+    <tr><td>11</td><td>PM2</td><td>Start, view logs, stop forever jobs.</td></tr>
+    <tr><td>12</td><td>Selectors</td><td>Make one safe selector more resilient.</td></tr>
+    <tr><td>13</td><td>Practice spec</td><td>Create a small temporary Playwright spec.</td></tr>
+    <tr><td>14</td><td>Real flow</td><td>Add or adjust one real automation flow.</td></tr>
+  </table>
+
+  <h2>Phase 14 — Must-Know Playwright Patterns</h2>
+
+  <h3>Wait before click</h3>
+  <pre><code>const button = page.getByRole("button", { name: "Faham" });
+await button.waitFor({ state: "visible", timeout: 10000 });
+await button.click();</code></pre>
+
+  <h3>New tab</h3>
+  <pre><code>const [newPage] = await Promise.all([
+  page.context().waitForEvent("page"),
+  page.getByRole("link", { name: "e-Duti Setem" }).click(),
+]);
+
+await newPage.waitForLoadState();
+page = newPage;</code></pre>
+
+  <h3>Optional popup</h3>
+  <pre><code>const okButton = page.getByRole("button", { name: "Ok" });
+
+if (await okButton.isVisible().catch(() =&gt; false)) {
+  await okButton.click();
+}</code></pre>
+
+  <h3>Upload file</h3>
+  <pre><code>await page.locator("#fileInput_single").setInputFiles("./test-data/image (19).png");</code></pre>
+
+  <h3>Save log</h3>
+  <pre><code>fs.appendFileSync("./test-data/srn-permanent-log.txt", `${srn}\n`);</code></pre>
+
+  <h3>Debug current URL</h3>
+  <pre><code>console.log("Current URL:", page.url());</code></pre>
+
+  <h2>Phase 15 — What to Avoid</h2>
+
+  <ol>
+    <li>Do not run all bots unless you really want many jobs running.</li>
+    <li>Do not overwrite <code>srn-permanent-log.txt</code> accidentally.</li>
+    <li>Do not change worker1 and worker2 to write to the same file.</li>
+    <li>Do not remove long waits unless you prove the live system is stable without them.</li>
+    <li>Do not assume a failure means code is wrong; it may be session expiry or backend slowness.</li>
+    <li>Do not use PM2 forever mode before confirming the spec works once.</li>
+    <li>Do not change <code>playwright.config.ts</code> workers/headless settings casually.</li>
+  </ol>
+
+  <h2>Recommended Learning Order Summary</h2>
+  <ol>
+    <li>JavaScript/TypeScript basics.</li>
+    <li>Playwright basics.</li>
+    <li>Run <code>login.spec.ts</code>.</li>
+    <li>Understand locators and waits.</li>
+    <li>Understand MyTax → e-Duti flow.</li>
+    <li>Understand test-data files.</li>
+    <li>Understand SRN logging.</li>
+    <li>Study stamping specs.</li>
+    <li>Study penalty specs.</li>
+    <li>Study Worker2.</li>
+    <li>Learn PM2.</li>
+    <li>Add or maintain one spec.</li>
+  </ol>
+
+  <h2>Best First Commands to Memorize</h2>
+  <pre><code>npm install
+npx playwright install --with-deps
+npm run login:one
+npm run srn-dev:one
+npm run report
+npm run bots:status
+npm run srn-dev:forever
+npm run srn-dev:logs
+npm run srn-dev:stop
+npx playwright test tests/&lt;spec-name&gt;.spec.ts</code></pre>
+
+  <div class="box">
+    <strong>Recommended starting path:</strong> Start with <code>login:one</code>, then <code>stamping:one</code>, then <code>srn-dev:one</code>.
+  </div>
+</body>
+</html>

@@ -3,20 +3,14 @@ import * as fs from "fs";
 
 const namaList = ["Form of Transfer of Securites"];
 
-// Penalty rotation pattern (per 7 iterations):
-// 1=biasa, 2=penalti, 3=biasa, 4=penalti, 5=biasa, 6=biasa, 7=biasa
-// Ratio: 2 penalty : 5 biasa
-const PENALTY_PATTERN = [
-  false,
-  true,
-  false,
-  true,
-  false,
-  true,
-  false,
-  true,
-  false,
-  true,
+// Flow pattern: repeats every 4 iterations
+// 1=Duti Dikecualikan, 2=No penalty, 3=Penalty, 4=No penalty
+type FlowType = "NO_PENALTY" | "PENALTY" | "DUTI_DIKECUALIKAN";
+const FLOW_PATTERN: FlowType[] = [
+  "DUTI_DIKECUALIKAN",
+  "NO_PENALTY",
+  "PENALTY",
+  "NO_PENALTY",
 ];
 
 // Date used for "tarikh penalti" (January — old enough to trigger penalty)
@@ -32,6 +26,8 @@ function getCurrentDate(): string {
 }
 
 test("test", async ({ page }) => {
+  test.setTimeout(4 * 60 * 60 * 1000); // 4 hours
+
   // Clear browser cache and cookies before starting
   const client = await page.context().newCDPSession(page);
   await client.send("Network.clearBrowserCache");
@@ -49,13 +45,15 @@ test("test", async ({ page }) => {
 
   await page.getByRole("combobox").selectOption("1");
   await page.getByRole("textbox", { name: "No. Pengenalan" }).click();
+  await page.waitForTimeout(3000);
   await page
     .getByRole("textbox", { name: "No. Pengenalan" })
     .fill("951004146116");
+  await page.waitForTimeout(2000);
   await page.getByRole("button", { name: "Hantar" }).click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
-    .waitFor({ state: "visible", timeout: 10000 });
+    .waitFor({ state: "visible", timeout: 30000 });
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
     .click();
@@ -64,16 +62,16 @@ test("test", async ({ page }) => {
     .fill("Password123");
   await page
     .getByText("Percubaan Log Masuk Anda : 0 /")
-    .waitFor({ state: "visible", timeout: 10000 });
+    .waitFor({ state: "visible", timeout: 30000 });
   await page.getByText("Percubaan Log Masuk Anda : 0 /").click();
   await page
     .getByText("Anda Ada 5 Percubaan Lagi")
-    .waitFor({ state: "visible", timeout: 10000 });
+    .waitFor({ state: "visible", timeout: 30000 });
   await page.getByText("Anda Ada 5 Percubaan Lagi").click();
   await page.getByText("Anda Ada 5 Percubaan Lagi").click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
-    .waitFor({ state: "visible", timeout: 10000 });
+    .waitFor({ state: "visible", timeout: 30000 });
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
     .click();
@@ -81,18 +79,18 @@ test("test", async ({ page }) => {
 
   await page
     .getByText("Mulai 1 Januari 2023, format")
-    .waitFor({ state: "visible", timeout: 10000 });
+    .waitFor({ state: "visible", timeout: 30000 });
   await page.getByText("Mulai 1 Januari 2023, format").click();
   await page.getByRole("button", { name: "Ok" }).click();
   await page.waitForTimeout(5000);
 
   await page
     .getByText("Perkhidmatan ezHasil")
-    .waitFor({ state: "visible", timeout: 10000 });
+    .waitFor({ state: "visible", timeout: 30000 });
   await page.getByText("Perkhidmatan ezHasil").click();
   await page
     .getByText("Duti Setem 2.0 (UAT) e-Duti")
-    .waitFor({ state: "visible", timeout: 10000 });
+    .waitFor({ state: "visible", timeout: 30000 });
   await page.getByText("Duti Setem 2.0 (UAT) e-Duti").click();
 
   // Wait for new tab to open when clicking e-Duti Setem
@@ -120,13 +118,24 @@ test("test", async ({ page }) => {
     `\n=== Run started: ${runTimestamp} ===\n`,
   );
 
-  // Loop 20 times starting from the stamping upload
+  // Loop 40 times starting from the stamping upload
   for (let i = 1; i <= 40; i++) {
-    const isPenalty = PENALTY_PATTERN[(i - 1) % PENALTY_PATTERN.length];
+    const flowType = FLOW_PATTERN[(i - 1) % FLOW_PATTERN.length];
+    const isPenalty = flowType === "PENALTY";
+    const isDutiDikecualikan = flowType === "DUTI_DIKECUALIKAN";
     const dateToUse = isPenalty ? PENALTY_DATE : getCurrentDate();
-    const docTitlePrefix = isPenalty ? "(PENALTY) " : "";
+    const docTitlePrefix = isPenalty
+      ? "Penalty "
+      : isDutiDikecualikan
+        ? "Duti Dikecualikan "
+        : "";
+    const flowLabel = isPenalty
+      ? "PENALTI"
+      : isDutiDikecualikan
+        ? "DUTI DIKECUALIKAN"
+        : "NO PENALTY";
     console.log(
-      `--- Loop iteration ${i} of XX --- [${isPenalty ? "PENALTI" : "BIASA"}] date=${dateToUse}`,
+      `--- Loop iteration ${i} of XX --- [${flowLabel}] date=${dateToUse}`,
     );
 
     await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
@@ -134,7 +143,7 @@ test("test", async ({ page }) => {
     await page.waitForTimeout(5000);
     await page
       .getByRole("button", { name: "Faham" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("button", { name: "Faham" }).click();
     await page
       .locator("#fileInput_single")
@@ -142,19 +151,19 @@ test("test", async ({ page }) => {
 
     await page
       .getByRole("button", { name: "Hantar" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("button", { name: "Hantar" }).click();
     await page.getByRole("button", { name: "Teruskan tanpa AI" }).click();
     await page
       .getByRole("option", { name: "DS 2: Pindah Milik Saham" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page
       .getByRole("option", { name: "DS 2: Pindah Milik Saham" })
       .click();
     await page.waitForTimeout(5000);
     await page
       .getByText("Tempat Surat Cara Ditandatangan*")
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByText("Tempat Surat Cara Ditandatangan*").click();
     await page.locator("#DocTitleStep0").click();
     await page
@@ -165,7 +174,7 @@ test("test", async ({ page }) => {
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("textbox", { name: "dd/MM/yyyy" }).first().click();
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
@@ -304,7 +313,7 @@ test("test", async ({ page }) => {
 
     // Open calendar and pick the first enabled day in the currently shown month
     await page.locator("#section1 input[placeholder='dd/MM/yyyy']").click();
-    await openCal.waitFor({ state: "visible", timeout: 10000 });
+    await openCal.waitFor({ state: "visible", timeout: 30000 });
     await openCal
       .locator(
         ".flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay)",
@@ -356,7 +365,7 @@ test("test", async ({ page }) => {
     // Wait for modal to be visible
     await page
       .locator("#uploadModal")
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
 
     // Set up file chooser handler BEFORE clicking Tambah Fail
     const fileChooserPromise = page.waitForEvent("filechooser");
@@ -407,7 +416,7 @@ test("test", async ({ page }) => {
     );
     fs.appendFileSync(
       "./test-data/srn-permanent-log.txt",
-      `[${new Date().toISOString()}] Loop ${i} | SRN: ${srnValue} | ${isPenalty ? "PENALTI" : "BIASA"}\n`,
+      `[${new Date().toISOString()}] Loop ${i} | SRN: ${srnValue} | ${flowLabel}\n`,
     );
 
     await page.getByRole("cell", { name: "LHDNM Proses" }).first().click();
@@ -425,11 +434,11 @@ test("test", async ({ page }) => {
     await page.getByRole("link", { name: "Taksiran Duti Setem" }).click();
     await page
       .getByRole("link", { name: "Carian" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("link", { name: "Carian" }).first().click();
     await page
       .getByRole("radio", { name: "No TIN" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("radio", { name: "No TIN" }).check();
     await page.getByRole("radio", { name: "No. Rujukan Setem" }).check();
     await page.getByPlaceholder(" ").click();
@@ -478,7 +487,7 @@ test("test", async ({ page }) => {
     // Login again with the user's credentials
     await page
       .locator("#Input_UsernameVal")
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.locator("#Input_UsernameVal").click();
     await page.locator("#Input_UsernameVal").fill(user.loginId);
     await page.locator("#Input_PasswordVal").click();
@@ -492,7 +501,7 @@ test("test", async ({ page }) => {
     await page.waitForTimeout(5000);
     await page
       .getByRole("link", { name: "Carian" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("link", { name: "Carian" }).click();
     await page.waitForTimeout(2000);
     await page.getByRole("radio", { name: "No TIN" }).check();
@@ -504,11 +513,11 @@ test("test", async ({ page }) => {
     await page.waitForTimeout(2000);
     await page
       .getByText("Negeri")
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByText("Negeri").click();
     await page
       .getByText("No. Rujukan Setem (SRN)")
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByText("No. Rujukan Setem (SRN)").click();
     await page
       .getByLabel("Maklumat Permohonan Penyeteman")
@@ -522,7 +531,7 @@ test("test", async ({ page }) => {
     await page.getByText("Nama Pemegang SRN").click();
     await page
       .getByRole("button", { name: "Senarai Taksiran" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("button", { name: "Senarai Taksiran" }).click();
     await page.waitForTimeout(2000);
     await page.getByRole("button", { name: "Senarai Taksiran" }).click();
@@ -530,61 +539,83 @@ test("test", async ({ page }) => {
     await page.waitForTimeout(5000);
     await page
       .getByRole("button", { name: "Sedia Untuk Taksiran Duti" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page
       .getByRole("button", { name: "Sedia Untuk Taksiran Duti" })
       .click();
     await page.waitForTimeout(2000);
     await page
       .getByText("Pengesahan Tindakan")
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByText("Pengesahan Tindakan").click();
     await page.getByText("Adakah Anda Ingin Teruskan").click();
     await page
       .getByRole("button", { name: "Ya" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("button", { name: "Ya" }).click();
     await page.waitForTimeout(2000);
     await page
       .getByText("Tindakan - Taksiran Duti")
       .nth(1)
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByText("Tindakan - Taksiran Duti").nth(1).click();
     await page.waitForTimeout(3000);
+
+    if (isDutiDikecualikan) {
+      //Duti Dikecualikan
+      await page
+        .getByText("Jenis Duti", { exact: true })
+        .waitFor({ state: "visible", timeout: 30000 });
+      await page.getByText("Jenis Duti", { exact: true }).click();
+      await page.getByRole("combobox").selectOption("3");
+      await page
+        .getByText("Perubahan ini akan")
+        .waitFor({ state: "visible", timeout: 30000 });
+      await page.getByText("Perubahan ini akan").click();
+      await page.getByRole("button", { name: "Ya" }).click();
+      await page.getByText("Jenis Peremitan / Pengecualian").click();
+      await page.getByRole("combobox").nth(1).selectOption("1");
+      await page
+        .getByText("Jumlah Perlu Dibayar :")
+        .waitFor({ state: "visible", timeout: 30000 });
+      await page.getByText("Jumlah Perlu Dibayar :").click();
+    }
+
+    //
     await page
       .getByRole("button", { name: "Prebiu Notis" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("button", { name: "Prebiu Notis" }).click();
     await page.waitForTimeout(5000);
 
     await page
       .locator("i.fa-times")
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.locator("i.fa-times").click();
     await page.waitForTimeout(2000);
     await page
       .getByRole("button", { name: "Hantar" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("button", { name: "Hantar" }).click();
     await page.waitForTimeout(2000);
     await page
       .getByRole("button", { name: "Ya" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("button", { name: "Ya" }).click();
     await page.waitForTimeout(5000);
     await page
       .getByRole("link", { name: "Carian" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("link", { name: "Carian" }).click();
     await page.waitForTimeout(2000);
     await page
       .getByPlaceholder(" ")
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByPlaceholder(" ").click();
     await page.getByPlaceholder(" ").fill(srnValue);
     await page
       .getByRole("button", { name: " Cari" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("button", { name: " Cari" }).click();
     await page.waitForTimeout(3000);
 
@@ -634,7 +665,7 @@ test("test", async ({ page }) => {
     // Login again with the endorsement user's credentials
     await page
       .locator("#Input_UsernameVal")
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.locator("#Input_UsernameVal").click();
     await page.locator("#Input_UsernameVal").fill(userEndorse.loginId);
     await page.locator("#Input_PasswordVal").click();
@@ -648,7 +679,7 @@ test("test", async ({ page }) => {
     await page.waitForTimeout(5000);
     await page
       .getByRole("link", { name: "Carian" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("link", { name: "Carian" }).click();
     await page.waitForTimeout(2000);
     await page.getByRole("radio", { name: "No TIN" }).check();
@@ -665,7 +696,7 @@ test("test", async ({ page }) => {
     await page.getByRole("button", { name: "Hantar" }).click();
     await page
       .getByText("Pengesahan Tindakan")
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByText("Pengesahan Tindakan").click();
     await page.waitForTimeout(2000);
 
@@ -676,7 +707,7 @@ test("test", async ({ page }) => {
 
     await page
       .getByRole("link", { name: "Carian" })
-      .waitFor({ state: "visible", timeout: 10000 });
+      .waitFor({ state: "visible", timeout: 30000 });
     await page.getByRole("link", { name: "Carian" }).click();
   }
 });

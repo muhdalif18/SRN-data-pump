@@ -35,6 +35,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `npm run srn-pump-peranan:one`
   - `npm run srn-dev:one`
 
+- Run an arbitrary spec directly:
+  - `npx playwright test tests/<spec-name>.spec.ts`
+  - Examples for specs without package scripts: `npx playwright test tests/e2e-dev.spec.ts`, `npx playwright test tests/e2e-ejen-duti-kompaun.spec.ts`, `npx playwright test "tests/LATEST BACKUP-YG-JADI-e2e-combine-penalti-without-penalty.spec.ts"`
+
+- There is no separate build or lint script in `package.json`; validation is via Playwright runs.
+
 - Multi-worker coordination:
   - Staggered start (60s delay): `npm run e2e-combine-penalti-without-penalty:staggered`
   - Stop both workers: `npm run e2e-combine-penalti-without-penalty:stop-both`
@@ -150,4 +156,12 @@ This repository is a Playwright-driven browser automation suite for e-Duti workf
 - Penalty patterns in specs use alternating date logic: `PENALTY_DATE` (old date like "01/01/2026") triggers penalties, `getCurrentDate()` for normal processing.
 - Worker2 specs use `test.use({ channel: "msedge", headless: true })` for parallel execution isolation.
 - SRN values are logged to both per-worker files and `srn-permanent-log.txt` for cross-run persistence.
-- No `.cursor/rules`, `.cursorrules`, or `.github/copilot-instructions.md` were found in this repository at time of writing.
+- All test specs follow a similar pattern:
+  1. Clear browser cache/cookies via CDP
+  2. Load test data from `test-data/` (addresses, users, Excel files)
+  3. Log in to MyTax → navigate to e-Duti Setem (opens new tab)
+  4. Loop through stamping submissions (typically 40 iterations)
+  5. Extract SRN from URLs and append to `current-url-worker1.txt` or `current-url-worker2.txt`
+  6. Some specs continue with HITS login and follow-up processing
+- Credentials are hardcoded in specs (not environment variables) — this is by design for this automation suite.
+- The suite uses `waitForTimeout()` heavily instead of deterministic waits — this is intentional for dealing with backend unpredictability.

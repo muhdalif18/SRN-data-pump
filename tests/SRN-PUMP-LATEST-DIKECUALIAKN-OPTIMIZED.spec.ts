@@ -3,20 +3,14 @@ import * as fs from "fs";
 
 const namaList = ["Form of Transfer of Securites"];
 
-// Penalty rotation pattern (per 7 iterations):
-// 1=biasa, 2=penalti, 3=biasa, 4=penalti, 5=biasa, 6=biasa, 7=biasa
-// Ratio: 2 penalty : 5 biasa
-const PENALTY_PATTERN = [
-  false,
-  true,
-  false,
-  true,
-  false,
-  true,
-  false,
-  true,
-  false,
-  true,
+// Flow pattern: repeats every 4 iterations
+// 1=Duti Dikecualikan, 2=No penalty, 3=Penalty, 4=No penalty
+type FlowType = "NO_PENALTY" | "PENALTY" | "DUTI_DIKECUALIKAN";
+const FLOW_PATTERN: FlowType[] = [
+  "DUTI_DIKECUALIKAN",
+  "NO_PENALTY",
+  "PENALTY",
+  "NO_PENALTY",
 ];
 
 // Date used for "tarikh penalti" (January — old enough to trigger penalty)
@@ -32,6 +26,8 @@ function getCurrentDate(): string {
 }
 
 test("test", async ({ page }) => {
+  test.setTimeout(4 * 60 * 60 * 1000); // 4 hours
+
   // Clear browser cache and cookies before starting
   const client = await page.context().newCDPSession(page);
   await client.send("Network.clearBrowserCache");
@@ -43,15 +39,28 @@ test("test", async ({ page }) => {
   );
   const addresses = addressesData.INDIVIDU;
 
+  // Load users data once for HITS division user lookup
+  const usersData = JSON.parse(
+    fs.readFileSync("./test-data/users_pre2.json", "utf-8"),
+  );
+  const usersByName = new Map(
+    usersData.map((row: any) => [row.nama?.toUpperCase(), row]),
+  );
+
   //EDS SIDE
   await page.goto("https://mytax-dev.hasil.gov.my/web/");
-  await page.waitForTimeout(3000);
+  await page
+    .getByRole("combobox")
+    .waitFor({ state: "visible", timeout: 500000 });
 
   await page.getByRole("combobox").selectOption("1");
   await page.getByRole("textbox", { name: "No. Pengenalan" }).click();
   await page
     .getByRole("textbox", { name: "No. Pengenalan" })
     .fill("951004146116");
+  await page
+    .getByRole("button", { name: "Hantar" })
+    .waitFor({ state: "visible", timeout: 10000 });
   await page.getByRole("button", { name: "Hantar" }).click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
@@ -84,7 +93,6 @@ test("test", async ({ page }) => {
     .waitFor({ state: "visible", timeout: 10000 });
   await page.getByText("Mulai 1 Januari 2023, format").click();
   await page.getByRole("button", { name: "Ok" }).click();
-  await page.waitForTimeout(5000);
 
   await page
     .getByText("Perkhidmatan ezHasil")
@@ -105,8 +113,6 @@ test("test", async ({ page }) => {
   await newPage.waitForLoadState();
   page = newPage;
 
-  await page.waitForTimeout(7000);
-
   // Clear the URL log file before starting
   fs.writeFileSync(
     "./test-data/current-url-worker1.txt",
@@ -120,18 +126,28 @@ test("test", async ({ page }) => {
     `\n=== Run started: ${runTimestamp} ===\n`,
   );
 
-  // Loop 20 times starting from the stamping upload
+  // Loop 40 times starting from the stamping upload
   for (let i = 1; i <= 40; i++) {
-    const isPenalty = PENALTY_PATTERN[(i - 1) % PENALTY_PATTERN.length];
+    const flowType = FLOW_PATTERN[(i - 1) % FLOW_PATTERN.length];
+    const isPenalty = flowType === "PENALTY";
+    const isDutiDikecualikan = flowType === "DUTI_DIKECUALIKAN";
     const dateToUse = isPenalty ? PENALTY_DATE : getCurrentDate();
-    const docTitlePrefix = isPenalty ? "(PENALTY) " : "";
+    const docTitlePrefix = isPenalty
+      ? "Penalty "
+      : isDutiDikecualikan
+        ? "Duti Dikecualikan "
+        : "";
+    const flowLabel = isPenalty
+      ? "PENALTI"
+      : isDutiDikecualikan
+        ? "DUTI DIKECUALIKAN"
+        : "NO PENALTY";
     console.log(
-      `--- Loop iteration ${i} of XX --- [${isPenalty ? "PENALTI" : "BIASA"}] date=${dateToUse}`,
+      `--- Loop iteration ${i} of 40 --- [${flowLabel}] date=${dateToUse}`,
     );
 
     await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
     //await page.locator('a[href="/stamping/upload"]').click();
-    await page.waitForTimeout(5000);
     await page
       .getByRole("button", { name: "Faham" })
       .waitFor({ state: "visible", timeout: 10000 });
@@ -151,7 +167,6 @@ test("test", async ({ page }) => {
     await page
       .getByRole("option", { name: "DS 2: Pindah Milik Saham" })
       .click();
-    await page.waitForTimeout(5000);
     await page
       .getByText("Tempat Surat Cara Ditandatangan*")
       .waitFor({ state: "visible", timeout: 10000 });
@@ -184,8 +199,10 @@ test("test", async ({ page }) => {
       .locator("button.nextBtn:has(span:text-is('Seterusnya'))")
       .first()
       .click({ force: true });
-    await page.waitForTimeout(3000);
 
+    await page
+      .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
+      .waitFor({ state: "visible", timeout: 10000 });
     await page
       .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
       .check();
@@ -274,14 +291,6 @@ test("test", async ({ page }) => {
       .click();
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
-    // Generate random numbers between 5-7 digits
-    const randomDigits = Math.floor(Math.random() * 3) + 4; // Random between 5-7
-    const minValue = Math.pow(4, randomDigits - 1);
-    const maxValue = Math.pow(4, randomDigits) - 1;
-    const randomNumber =
-      Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
-    const formattedNumber = randomNumber.toLocaleString("en-US");
-
     await page.getByRole("radio", { name: "Ada", exact: true }).check();
     await page.getByRole("radio", { name: "Tiada" }).check();
     await page.getByRole("radio", { name: "Saham Biasa" }).check();
@@ -350,9 +359,9 @@ test("test", async ({ page }) => {
       .locator(
         'button.upload-btn[data-bs-model="StampingForm.SupportingDocFiles"]',
       )
-      .click();
-    await page.waitForTimeout(2000);
+      .click({ force: true });
 
+    await page.waitForTimeout(3000);
     // Wait for modal to be visible
     await page
       .locator("#uploadModal")
@@ -367,12 +376,16 @@ test("test", async ({ page }) => {
     // Handle the file chooser
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles("./test-data/image (19).png");
-    await page.waitForTimeout(2000);
 
     // Click Simpan Fail button
     await page.locator("button#btnSaveUpload").click();
-    await page.waitForTimeout(2000);
+    await page
+      .locator("#uploadModal")
+      .waitFor({ state: "hidden", timeout: 10000 });
 
+    await page
+      .getByRole("button", { name: "Seterusnya " })
+      .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
     await page
@@ -394,10 +407,10 @@ test("test", async ({ page }) => {
     await page.getByRole("heading", { name: "Senarai Permohonan" }).click();
 
     // Extract and log the SRN
-    await page.waitForTimeout(2000);
-    const srnElement = await page
+    const srnElement = page
       .locator("p.modern-clickable-stamp[data-search]")
       .first();
+    await srnElement.waitFor({ state: "visible", timeout: 10000 });
     const srn = await srnElement.textContent();
     const srnValue = srn?.trim() || "";
     console.log(`SRN: ${srnValue}`);
@@ -407,7 +420,7 @@ test("test", async ({ page }) => {
     );
     fs.appendFileSync(
       "./test-data/srn-permanent-log.txt",
-      `[${new Date().toISOString()}] Loop ${i} | SRN: ${srnValue} | ${isPenalty ? "PENALTI" : "BIASA"}\n`,
+      `[${new Date().toISOString()}] Loop ${i} | SRN: ${srnValue} | ${flowLabel}\n`,
     );
 
     await page.getByRole("cell", { name: "LHDNM Proses" }).first().click();
@@ -421,10 +434,17 @@ test("test", async ({ page }) => {
     await page.locator("#Input_PasswordVal").click();
     await page.locator("#Input_PasswordVal").fill("990101019011");
     await page.getByRole("button", { name: "Login" }).click();
+    await page
+      .getByRole("link", { name: "Duti Setem " })
+      .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("link", { name: "Duti Setem " }).click();
+    await page
+      .getByRole("link", { name: "Taksiran Duti Setem" })
+      .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("link", { name: "Taksiran Duti Setem" }).click();
     await page
       .getByRole("link", { name: "Carian" })
+      .first()
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("link", { name: "Carian" }).first().click();
     await page
@@ -438,10 +458,10 @@ test("test", async ({ page }) => {
     await page.getByRole("button", { name: " Cari" }).click();
 
     // Capture Nama Pemegang SRN
-    await page.waitForTimeout(2000);
-    const namaPemegangElement = await page.locator(
+    const namaPemegangElement = page.locator(
       'div.columns-item:has-text("Nama Pemegang SRN") + div.columns-item span[data-expression][style*="font-weight: bold"]',
     );
+    await namaPemegangElement.waitFor({ state: "visible", timeout: 10000 });
     const namaPemegang = await namaPemegangElement.textContent();
     const namaPemegangValue = namaPemegang?.trim() || "";
     console.log(`Nama Pemegang SRN: ${namaPemegangValue}`);
@@ -454,15 +474,8 @@ test("test", async ({ page }) => {
       `[${new Date().toISOString()}] Loop ${i} | Nama: ${namaPemegangValue}\n`,
     );
 
-    // Read JSON file to find user credentials
-    const usersData = JSON.parse(
-      fs.readFileSync("./test-data/users_pre2.json", "utf-8"),
-    );
-
     // Find the user by name
-    const user: any = usersData.find(
-      (row: any) => row.nama?.toUpperCase() === namaPemegangValue.toUpperCase(),
-    );
+    const user: any = usersByName.get(namaPemegangValue.toUpperCase());
 
     if (!user) {
       throw new Error(`User credentials not found for: ${namaPemegangValue}`);
@@ -473,7 +486,6 @@ test("test", async ({ page }) => {
     // Logout from HITS
     await page.locator(".submenu-icon").click();
     await page.getByRole("link", { name: " Log Keluar" }).click();
-    await page.waitForTimeout(5000);
 
     // Login again with the user's credentials
     await page
@@ -484,24 +496,23 @@ test("test", async ({ page }) => {
     await page.locator("#Input_PasswordVal").click();
     await page.locator("#Input_PasswordVal").fill(user.password);
     await page.getByRole("button", { name: "Login" }).click();
-    await page.waitForTimeout(5000);
 
     await page.getByRole("link", { name: "Duti Setem " }).click();
-    await page.waitForTimeout(2000);
     await page.getByRole("link", { name: "Taksiran Duti Setem" }).click();
-    await page.waitForTimeout(5000);
     await page
       .getByRole("link", { name: "Carian" })
+      .first()
       .waitFor({ state: "visible", timeout: 10000 });
-    await page.getByRole("link", { name: "Carian" }).click();
-    await page.waitForTimeout(2000);
+    await page.getByRole("link", { name: "Carian" }).first().click();
+    await page
+      .getByRole("radio", { name: "No TIN" })
+      .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("radio", { name: "No TIN" }).check();
     await page.getByRole("radio", { name: "No. Rujukan Setem" }).check();
     await page.getByPlaceholder(" ").click();
     await page.getByPlaceholder(" ").click();
     await page.getByPlaceholder(" ").fill(srnValue);
     await page.getByRole("button", { name: " Cari" }).click();
-    await page.waitForTimeout(2000);
     await page
       .getByText("Negeri")
       .waitFor({ state: "visible", timeout: 10000 });
@@ -524,17 +535,14 @@ test("test", async ({ page }) => {
       .getByRole("button", { name: "Senarai Taksiran" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: "Senarai Taksiran" }).click();
-    await page.waitForTimeout(2000);
     await page.getByRole("button", { name: "Senarai Taksiran" }).click();
     await page.getByRole("link", { name: "-", exact: true }).click();
-    await page.waitForTimeout(5000);
     await page
       .getByRole("button", { name: "Sedia Untuk Taksiran Duti" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page
       .getByRole("button", { name: "Sedia Untuk Taksiran Duti" })
       .click();
-    await page.waitForTimeout(2000);
     await page
       .getByText("Pengesahan Tindakan")
       .waitFor({ state: "visible", timeout: 10000 });
@@ -544,39 +552,55 @@ test("test", async ({ page }) => {
       .getByRole("button", { name: "Ya" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: "Ya" }).click();
-    await page.waitForTimeout(2000);
     await page
       .getByText("Tindakan - Taksiran Duti")
       .nth(1)
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByText("Tindakan - Taksiran Duti").nth(1).click();
-    await page.waitForTimeout(3000);
+
+    if (isDutiDikecualikan) {
+      //Duti Dikecualikan
+      await page
+        .getByText("Jenis Duti", { exact: true })
+        .waitFor({ state: "visible", timeout: 10000 });
+      await page.getByText("Jenis Duti", { exact: true }).click();
+      await page.getByRole("combobox").selectOption("3");
+      await page
+        .getByText("Perubahan ini akan")
+        .waitFor({ state: "visible", timeout: 10000 });
+      await page.getByText("Perubahan ini akan").click();
+      await page.getByRole("button", { name: "Ya" }).click();
+      await page.getByText("Jenis Peremitan / Pengecualian").click();
+      await page.getByRole("combobox").nth(1).selectOption("1");
+      await page
+        .getByText("Jumlah Perlu Dibayar :")
+        .waitFor({ state: "visible", timeout: 10000 });
+      await page.getByText("Jumlah Perlu Dibayar :").click();
+    }
+
+    //
     await page
       .getByRole("button", { name: "Prebiu Notis" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: "Prebiu Notis" }).click();
-    await page.waitForTimeout(5000);
 
     await page
       .locator("i.fa-times")
       .waitFor({ state: "visible", timeout: 10000 });
     await page.locator("i.fa-times").click();
-    await page.waitForTimeout(2000);
     await page
       .getByRole("button", { name: "Hantar" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: "Hantar" }).click();
-    await page.waitForTimeout(2000);
     await page
       .getByRole("button", { name: "Ya" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: "Ya" }).click();
-    await page.waitForTimeout(5000);
     await page
       .getByRole("link", { name: "Carian" })
+      .first()
       .waitFor({ state: "visible", timeout: 10000 });
-    await page.getByRole("link", { name: "Carian" }).click();
-    await page.waitForTimeout(2000);
+    await page.getByRole("link", { name: "Carian" }).first().click();
     await page
       .getByPlaceholder(" ")
       .waitFor({ state: "visible", timeout: 10000 });
@@ -586,13 +610,15 @@ test("test", async ({ page }) => {
       .getByRole("button", { name: " Cari" })
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("button", { name: " Cari" }).click();
-    await page.waitForTimeout(3000);
 
     // Capture Nama Pemegang SRN for endorsement
-    await page.waitForTimeout(2000);
-    const namaPemegangElementEndorse = await page.locator(
+    const namaPemegangElementEndorse = page.locator(
       'div.columns-item:has-text("Nama Pemegang SRN") + div.columns-item span[data-expression][style*="font-weight: bold"]',
     );
+    await namaPemegangElementEndorse.waitFor({
+      state: "visible",
+      timeout: 10000,
+    });
     const namaPemegangEndorse = await namaPemegangElementEndorse.textContent();
     const namaPemegangValueEndorse = namaPemegangEndorse?.trim() || "";
     console.log(`Nama Pemegang SRN (Endorsement): ${namaPemegangValueEndorse}`);
@@ -605,15 +631,9 @@ test("test", async ({ page }) => {
       `[${new Date().toISOString()}] Loop ${i} | Endorsement Nama: ${namaPemegangValueEndorse}\n`,
     );
 
-    // Read JSON file to find user credentials for endorsement
-    const usersDataEndorse = JSON.parse(
-      fs.readFileSync("./test-data/users_pre2.json", "utf-8"),
-    );
-
     // Find the user by name
-    const userEndorse: any = usersDataEndorse.find(
-      (row: any) =>
-        row.nama?.toUpperCase() === namaPemegangValueEndorse.toUpperCase(),
+    const userEndorse: any = usersByName.get(
+      namaPemegangValueEndorse.toUpperCase(),
     );
 
     if (!userEndorse) {
@@ -629,7 +649,6 @@ test("test", async ({ page }) => {
     // Logout from HITS
     await page.locator(".submenu-icon").click();
     await page.getByRole("link", { name: " Log Keluar" }).click();
-    await page.waitForTimeout(5000);
 
     // Login again with the endorsement user's credentials
     await page
@@ -640,26 +659,30 @@ test("test", async ({ page }) => {
     await page.locator("#Input_PasswordVal").click();
     await page.locator("#Input_PasswordVal").fill(userEndorse.password);
     await page.getByRole("button", { name: "Login" }).click();
-    await page.waitForTimeout(5000);
 
     await page.getByRole("link", { name: "Duti Setem " }).click();
-    await page.waitForTimeout(2000);
     await page.getByRole("link", { name: "Taksiran Duti Setem" }).click();
-    await page.waitForTimeout(5000);
     await page
       .getByRole("link", { name: "Carian" })
+      .first()
       .waitFor({ state: "visible", timeout: 10000 });
-    await page.getByRole("link", { name: "Carian" }).click();
-    await page.waitForTimeout(2000);
+    await page.getByRole("link", { name: "Carian" }).first().click();
+    await page
+      .getByRole("radio", { name: "No TIN" })
+      .waitFor({ state: "visible", timeout: 10000 });
     await page.getByRole("radio", { name: "No TIN" }).check();
     await page.getByRole("radio", { name: "No. Rujukan Setem" }).check();
     await page.getByPlaceholder(" ").click();
     await page.getByPlaceholder(" ").fill(srnValue);
     await page.getByRole("button", { name: " Cari" }).click();
-    await page.waitForTimeout(3000);
+    await page
+      .getByRole("link", { name: "-", exact: true })
+      .waitFor({ state: "visible", timeout: 10000 });
 
     await page.getByRole("link", { name: "-", exact: true }).click();
-    await page.waitForTimeout(3000);
+    await page
+      .getByText("Tidak Indors")
+      .waitFor({ state: "visible", timeout: 10000 });
     await page.getByText("Tidak Indors").click();
     await page.getByText("Indors", { exact: true }).click();
     await page.getByRole("button", { name: "Hantar" }).click();
@@ -667,16 +690,14 @@ test("test", async ({ page }) => {
       .getByText("Pengesahan Tindakan")
       .waitFor({ state: "visible", timeout: 10000 });
     await page.getByText("Pengesahan Tindakan").click();
-    await page.waitForTimeout(2000);
 
     await page.getByRole("button", { name: "Ya" }).click();
 
-    await page.waitForTimeout(7000);
     // Wait for Senarai Tindakan to appear
-
     await page
       .getByRole("link", { name: "Carian" })
+      .first()
       .waitFor({ state: "visible", timeout: 10000 });
-    await page.getByRole("link", { name: "Carian" }).click();
+    await page.getByRole("link", { name: "Carian" }).first().click();
   }
 });
