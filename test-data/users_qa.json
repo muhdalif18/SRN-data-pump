@@ -1,0 +1,404 @@
+[
+  {
+    "nama": "USER STDS 1",
+    "role": "Jabatan",
+    "loginId": "userstds1@hasil.gov.my",
+    "password": "990101019001"
+  },
+  {
+    "nama": "USER STDS 01",
+    "role": "Jabatan",
+    "loginId": "userstds02@hasil.gov.my",
+    "password": "990101019002"
+  },
+  {
+    "nama": "USER STDS 3",
+    "role": "Jabatan",
+    "loginId": "userstds3@hasil.gov.my",
+    "password": "990101019003"
+  },
+  {
+    "nama": "USER STDS 4",
+    "role": "Jabatan",
+    "loginId": "userstds4@hasil.gov.my",
+    "password": "990101019004"
+  },
+  {
+    "nama": "USER STDS 5",
+    "role": "Jabatan",
+    "loginId": "userstds5@hasil.gov.my",
+    "password": "990101019005"
+  },
+  {
+    "nama": "USER STDS PAHANG 1",
+    "role": "Pegawai",
+    "loginId": "userstds_pahang_pg@hasil.gov.my",
+    "password": "900101019040"
+  },
+  {
+    "nama": "USER STDS PAHANG 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_pahang_ppg@hasil.gov.my",
+    "password": "900101019041"
+  },
+  {
+    "nama": "USER STDS PAHANG 3",
+    "role": "Pengurus",
+    "loginId": "userstds_pahang_pu@hasil.gov.my",
+    "password": "900101019042"
+  },
+  {
+    "nama": "USER STDS PAHANG 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_pahang_pon@hasil.gov.my",
+    "password": "900101019043"
+  },
+  {
+    "nama": "USER STDS KL 1",
+    "role": "Pegawai",
+    "loginId": "userstds_kl_pg@hasil.gov.my",
+    "password": "900101019044"
+  },
+  {
+    "nama": "USER STDS KL 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_kl_ppg@hasil.gov.my",
+    "password": "900101019045"
+  },
+  {
+    "nama": "USER STDS KL 3",
+    "role": "Pengurus",
+    "loginId": "userstds_kl_pu@hasil.gov.my",
+    "password": "900101019046"
+  },
+  {
+    "nama": "USER STDS KL 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_kl_pon@hasil.gov.my",
+    "password": "900101019047"
+  },
+  {
+    "nama": "USER STDS Pulau Pinang 1",
+    "role": "Pegawai",
+    "loginId": "userstds_pp_pg@hasil.gov.my",
+    "password": "900101019048"
+  },
+  {
+    "nama": "USER STDS Pulau Pinang 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_pp_ppg@hasil.gov.my",
+    "password": "900101019049"
+  },
+  {
+    "nama": "USER STDS Pulau Pinang 3",
+    "role": "Pengurus",
+    "loginId": "userstds_pp_pu@hasil.gov.my",
+    "password": "900101019050"
+  },
+  {
+    "nama": "USER STDS Pulau Pinang 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_pp_pon@hasil.gov.my",
+    "password": "900101019051"
+  },
+  {
+    "nama": "USER STDS Perak 1",
+    "role": "Pegawai",
+    "loginId": "userstds_p_pg@hasil.gov.my",
+    "password": "900101019052"
+  },
+  {
+    "nama": "USER STDS Perak 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_p_ppg@hasil.gov.my",
+    "password": "900101019053"
+  },
+  {
+    "nama": "USER STDS Perak 3",
+    "role": "Pengurus",
+    "loginId": "userstds_p_pu@hasil.gov.my",
+    "password": "900101019054"
+  },
+  {
+    "nama": "USER STDS Perak 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_p_pon@hasil.gov.my",
+    "password": "900101019055"
+  },
+  {
+    "nama": "USER STDS Johor 1",
+    "role": "Pegawai",
+    "loginId": "userstds_j_pg@hasil.gov.my",
+    "password": "900101019056"
+  },
+  {
+    "nama": "USER STDS Johor 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_j_ppg@hasil.gov.my",
+    "password": "900101019057"
+  },
+  {
+    "nama": "USER STDS Johor 3",
+    "role": "Pengurus",
+    "loginId": "userstds_j_pu@hasil.gov.my",
+    "password": "900101019058"
+  },
+  {
+    "nama": "USER STDS Johor 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_j_pon@hasil.gov.my",
+    "password": "900101019059"
+  },
+  {
+    "nama": "USER STDS Sabah 1",
+    "role": "Pegawai",
+    "loginId": "userstds_sh_pg@hasil.gov.my",
+    "password": "900101019060"
+  },
+  {
+    "nama": "USER STDS Sabah 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_sh_ppg@hasil.gov.my",
+    "password": "900101019061"
+  },
+  {
+    "nama": "USER STDS Sabah 3",
+    "role": "Pengurus",
+    "loginId": "userstds_sh_pu@hasil.gov.my",
+    "password": "900101019062"
+  },
+  {
+    "nama": "USER STDS Sabah 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_sh_pon@hasil.gov.my",
+    "password": "900101019063"
+  },
+  {
+    "nama": "USER STDS Sarawak 1",
+    "role": "Pegawai",
+    "loginId": "userstds_sk_pg@hasil.gov.my",
+    "password": "900101019064"
+  },
+  {
+    "nama": "USER STDS Sarawak 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_sk_ppg@hasil.gov.my",
+    "password": "900101019065"
+  },
+  {
+    "nama": "USER STDS Sarawak 3",
+    "role": "Pengurus",
+    "loginId": "userstds_sk_pu@hasil.gov.my",
+    "password": "900101019066"
+  },
+  {
+    "nama": "USER STDS Sarawak 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_sk_pon@hasil.gov.my",
+    "password": "900101019067"
+  },
+  {
+    "nama": "USER STDS Selangor 1",
+    "role": "Pegawai",
+    "loginId": "userstds_slngr_pg@hasil.gov.my",
+    "password": "900101019068"
+  },
+  {
+    "nama": "USER STDS Selangor 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_slngr_ppg@hasil.gov.my",
+    "password": "900101019069"
+  },
+  {
+    "nama": "USER STDS Selangor 3",
+    "role": "Pengurus",
+    "loginId": "userstds_slngr_pu@hasil.gov.my",
+    "password": "900101019070"
+  },
+  {
+    "nama": "USER STDS Selangor 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_slngr_pon@hasil.gov.my",
+    "password": "900101019071"
+  },
+  {
+    "nama": "USER STDS Negeri 9 1",
+    "role": "Pegawai",
+    "loginId": "userstds_n9_pg@hasil.gov.my",
+    "password": "900101019072"
+  },
+  {
+    "nama": "USER STDS Negeri 9 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_n9_ppg@hasil.gov.my",
+    "password": "900101019073"
+  },
+  {
+    "nama": "USER STDS Negeri 9 3",
+    "role": "Pengurus",
+    "loginId": "userstds_n9_pu@hasil.gov.my",
+    "password": "900101019074"
+  },
+  {
+    "nama": "USER STDS Negeri 9 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_n9_pon@hasil.gov.my",
+    "password": "900101019075"
+  },
+  {
+    "nama": "USER STDS Melaka 1",
+    "role": "Pegawai",
+    "loginId": "userstds_mlk_pg@hasil.gov.my",
+    "password": "900101019076"
+  },
+  {
+    "nama": "USER STDS Melaka 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_mlk_ppg@hasil.gov.my",
+    "password": "900101019077"
+  },
+  {
+    "nama": "USER STDS Melaka 3",
+    "role": "Pengurus",
+    "loginId": "userstds_mlk_pu@hasil.gov.my",
+    "password": "900101019078"
+  },
+  {
+    "nama": "USER STDS Melaka 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_mlk_pon@hasil.gov.my",
+    "password": "900101019079"
+  },
+  {
+    "nama": "USER STDS Kedah 1",
+    "role": "Pegawai",
+    "loginId": "userstds_kdh_pg@hasil.gov.my",
+    "password": "900101019080"
+  },
+  {
+    "nama": "USER STDS Kedah 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_kdh_ppg@hasil.gov.my",
+    "password": "900101019081"
+  },
+  {
+    "nama": "USER STDS Kedah 3",
+    "role": "Pengurus",
+    "loginId": "userstds_kdh_pu@hasil.gov.my",
+    "password": "900101019082"
+  },
+  {
+    "nama": "USER STDS Kedah 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_kdh_pon@hasil.gov.my",
+    "password": "900101019083"
+  },
+  {
+    "nama": "USER STDS Kelantan 1",
+    "role": "Pegawai",
+    "loginId": "userstds_kltn_pg@hasil.gov.my",
+    "password": "900101019084"
+  },
+  {
+    "nama": "USER STDS Kelantan 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_kltn_ppg@hasil.gov.my",
+    "password": "900101019085"
+  },
+  {
+    "nama": "USER STDS Kelantan 3",
+    "role": "Pengurus",
+    "loginId": "userstds_kltn_pu@hasil.gov.my",
+    "password": "900101019086"
+  },
+  {
+    "nama": "USER STDS Kelantan 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_kltn_pon@hasil.gov.my",
+    "password": "900101019087"
+  },
+  {
+    "nama": "USER STDS Terengganu 1",
+    "role": "Pegawai",
+    "loginId": "userstds_trgn_pg@hasil.gov.my",
+    "password": "900101019088"
+  },
+  {
+    "nama": "USER STDS Terengganu 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_trgn_ppg@hasil.gov.my",
+    "password": "900101019089"
+  },
+  {
+    "nama": "USER STDS Terengganu 3",
+    "role": "Pengurus",
+    "loginId": "userstds_trgn_pu@hasil.gov.my",
+    "password": "900101019090"
+  },
+  {
+    "nama": "USER STDS Terengganu 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_trgn_pon@hasil.gov.my",
+    "password": "900101019091"
+  },
+  {
+    "nama": "USER STDS Perlis 1",
+    "role": "Pegawai",
+    "loginId": "userstds_prls_pg@hasil.gov.my",
+    "password": "900101019092"
+  },
+  {
+    "nama": "USER STDS Perlis 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_prls_ppg@hasil.gov.my",
+    "password": "900101019093"
+  },
+  {
+    "nama": "USER STDS Perlis 3",
+    "role": "Pengurus",
+    "loginId": "userstds_prls_pu@hasil.gov.my",
+    "password": "900101019094"
+  },
+  {
+    "nama": "USER STDS Perlis 4",
+    "role": "Pengarah Operasi Negeri",
+    "loginId": "userstds_prls_pon@hasil.gov.my",
+    "password": "900101019095"
+  },
+  {
+    "nama": "USER STDS Pungutan 1",
+    "role": "Pegawai",
+    "loginId": "userstds_pungutan1@hasil.gov.my",
+    "password": "900101019096"
+  },
+  {
+    "nama": "USER STDS Pungutan 2",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_pungutan2@hasil.gov.my",
+    "password": "900101019097"
+  },
+  {
+    "nama": "USER STDS Pungutan 3",
+    "role": "Pegawai",
+    "loginId": "userstds_pungutan3@hasil.gov.my",
+    "password": "900101019098"
+  },
+  {
+    "nama": "USER STDS Pungutan 4",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_pungutan4@hasil.gov.my",
+    "password": "900101019099"
+  },
+  {
+    "nama": "USER STDS Pungutan 5",
+    "role": "Pegawai",
+    "loginId": "userstds_pungutan5@hasil.gov.my",
+    "password": "900101019100"
+  },
+  {
+    "nama": "USER STDS Pungutan 6",
+    "role": "Pembantu Pegawai",
+    "loginId": "userstds_pungutan6@hasil.gov.my",
+    "password": "900101019101"
+  }
+]

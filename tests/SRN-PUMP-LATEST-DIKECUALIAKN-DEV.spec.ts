@@ -1,6 +1,13 @@
 import { test } from "@playwright/test";
 import * as fs from "fs";
 
+const usersDevData = JSON.parse(
+  fs.readFileSync("./test-data/users_dev.json", "utf-8"),
+);
+const defaultHitsUser =
+  usersDevData.find((row: any) => row.nama?.toUpperCase() === "USER STDS 1") ??
+  usersDevData[0];
+
 const namaList = ["Form of Transfer of Securites"];
 
 // Flow pattern: repeats every 4 iterations
@@ -469,12 +476,10 @@ test("test", async ({ page }) => {
     await page.goto("https://hitsdev.hasil.gov.my/Dashboard/Login");
     await page.locator(".login-screen").click();
     await page.locator("#Input_UsernameVal").click();
-    await page
-      .locator("#Input_UsernameVal")
-      .fill("userstds_pahang_pr@hasil.gov.my");
+    await page.locator("#Input_UsernameVal").fill(defaultHitsUser.loginId);
     await page.locator("#Input_UsernameVal").click();
     await page.locator("#Input_PasswordVal").click();
-    await page.locator("#Input_PasswordVal").fill("900101019039");
+    await page.locator("#Input_PasswordVal").fill(defaultHitsUser.password);
     await page.getByRole("button", { name: "Login" }).click();
     await page.waitForTimeout(2000);
     /*  await page.getByRole("link", { name: "Duti Setem " }).click();
@@ -520,7 +525,7 @@ test("test", async ({ page }) => {
 
     // Read JSON file to find user credentials
     const usersData = JSON.parse(
-      fs.readFileSync("./test-data/users_pre2.json", "utf-8"),
+      fs.readFileSync("./test-data/users_dev.json", "utf-8"),
     );
 
     // Find the user by name
@@ -711,7 +716,7 @@ test("test", async ({ page }) => {
 
     // Read JSON file to find user credentials for endorsement
     const usersDataEndorse = JSON.parse(
-      fs.readFileSync("./test-data/users_pre2.json", "utf-8"),
+      fs.readFileSync("./test-data/users_dev.json", "utf-8"),
     );
 
     // Find the user by name
