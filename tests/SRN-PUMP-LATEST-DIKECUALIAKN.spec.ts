@@ -98,11 +98,11 @@ test("test", async ({ page }) => {
     .waitFor({ state: "visible", timeout: 20000 });
   await page.getByText("Perkhidmatan ezHasil").click();
   await page
-    .getByText("Duti Setem (DEV)")
-    //.getByText("Duti Setem 2.0 (UAT) e-Duti")
+
+    .getByText("Duti Setem 2.0 (UAT) e-Duti")
     .waitFor({ state: "visible", timeout: 20000 });
-  await page.getByText("Duti Setem (DEV)").click();
-  //await page.getByText("Duti Setem 2.0 (UAT) e-Duti").click();
+
+  await page.getByText("Duti Setem 2.0 (UAT) e-Duti").click();
 
   // Wait for new tab to open when clicking e-Duti Setem
   const [newPage] = await Promise.all([
@@ -131,7 +131,37 @@ test("test", async ({ page }) => {
 
   // Loop 40 times starting from the stamping upload
   // If a penalty amount is needed, pick one fixed amount per run and reuse it for all penalty SRNs
+  // Allow overriding the fixed penalty amount via the PENALTY_AMOUNT environment variable.
+  const configuredPenaltyEnv = process.env.PENALTY_AMOUNT;
   let fixedPenaltyAmount: number | null = null;
+  if (configuredPenaltyEnv) {
+    const parsed = Number(
+      String(configuredPenaltyEnv).replace(/[^0-9.-]/g, ""),
+    );
+    if (!Number.isNaN(parsed) && parsed > 0) {
+      fixedPenaltyAmount = parsed;
+      console.log(
+        `Using configured penalty amount from env: ${fixedPenaltyAmount}`,
+      );
+      fs.appendFileSync(
+        "./test-data/srn-permanent-log.txt",
+        `[${new Date().toISOString()}] Configured fixed penalty amount: ${fixedPenaltyAmount}\n`,
+      );
+    } else {
+      console.log(
+        `Invalid PENALTY_AMOUNT env value: ${configuredPenaltyEnv}, ignoring.`,
+      );
+    }
+  }
+  // If no configured value provided, use the project default fixed penalty amount
+  if (fixedPenaltyAmount === null) {
+    fixedPenaltyAmount = 427183954;
+    console.log(`Default fixed penalty amount set: ${fixedPenaltyAmount}`);
+    fs.appendFileSync(
+      "./test-data/srn-permanent-log.txt",
+      `[${new Date().toISOString()}] Default fixed penalty amount set: ${fixedPenaltyAmount}\n`,
+    );
+  }
 
   for (let i = 1; i <= 40; i++) {
     const flowType = FLOW_PATTERN[(i - 1) % FLOW_PATTERN.length];
@@ -152,8 +182,7 @@ test("test", async ({ page }) => {
       `--- Loop iteration ${i} of XX --- [${flowLabel}] date=${dateToUse}`,
     );
 
-    await page.goto("https://eds-dev.hasil.gov.my/stamping/upload");
-    // await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
+    await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
     //await page.locator('a[href="/stamping/upload"]').click();
     await page.waitForTimeout(5000);
     await page
@@ -216,7 +245,7 @@ test("test", async ({ page }) => {
     await page
       .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
       .check();
-    await page
+    /*  await page
       .getByLabel("A. PIHAK PERTAMA")
       .locator("div")
       .filter({ hasText: /^Bandar$/ })
@@ -225,7 +254,8 @@ test("test", async ({ page }) => {
       .getByLabel("A. PIHAK PERTAMA")
       .locator("div")
       .filter({ hasText: /^Negeri$/ })
-      .click();
+      .click(); */
+    await page.waitForTimeout(3000);
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
     await page
@@ -292,16 +322,7 @@ test("test", async ({ page }) => {
       .locator('input[name="StampingForm.FormBIndividualList[0].Postcode"]')
       .fill("50000");
     await page.waitForTimeout(4000);
-    await page
-      .locator("div")
-      .filter({ hasText: /^Bandar$/ })
-      .nth(1)
-      .click();
-    await page
-      .locator("div")
-      .filter({ hasText: /^Negeri$/ })
-      .nth(1)
-      .click();
+
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
     await page
@@ -332,6 +353,10 @@ test("test", async ({ page }) => {
         fixedPenaltyAmount =
           Math.floor(Math.random() * (900000000 - 100000000 + 1)) + 100000000;
         console.log(`Fixed penalty amount selected: ${fixedPenaltyAmount}`);
+        fs.appendFileSync(
+          "./test-data/srn-permanent-log.txt",
+          `[${new Date().toISOString()}] Fixed penalty amount selected: ${fixedPenaltyAmount}\n`,
+        );
       }
       amountToUse = fixedPenaltyAmount;
     } else {
@@ -441,8 +466,7 @@ test("test", async ({ page }) => {
       .getByRole("button", { name: "Kembali ke Paparan Utama" })
       .waitFor({ state: "visible", timeout: 20000 });
 
-    await page.goto("https://eds-dev.hasil.gov.my/Home/Index");
-    //   await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
+    await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
     await page.getByRole("heading", { name: "Senarai Permohonan" }).click();
 
     // Extract and log the SRN
@@ -465,8 +489,8 @@ test("test", async ({ page }) => {
     await page.getByRole("cell", { name: "LHDNM Proses" }).first().click();
 
     //HITS SIDE
-    //  await page.goto("https://hitspre2.hasil.gov.my/Dashboard/Login");
-    await page.goto("https://hitsdev.hasil.gov.my/Dashboard/Login");
+    await page.goto("https://hitspre2.hasil.gov.my/Dashboard/Login");
+
     await page.locator(".login-screen").click();
     await page.locator("#Input_UsernameVal").click();
     await page
@@ -479,16 +503,15 @@ test("test", async ({ page }) => {
     await page.waitForTimeout(2000);
     /*  await page.getByRole("link", { name: "Duti Setem " }).click();
     await page.getByRole("link", { name: "Taksiran Duti Setem" }).click(); */
-    // await page.goto("https://hitspre2.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
-    await page.goto("https://hitsdev.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
+    await page.goto("https://hitspre2.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
+
     await page.waitForTimeout(2000);
     /* await page
       .getByRole("link", { name: "Carian" })
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByRole("link", { name: "Carian" }).first().click(); */
     await page.goto(
-      "https://hitsdev.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
-      //  "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
+      "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
     await page.waitForTimeout(2000);
     await page
@@ -553,8 +576,8 @@ test("test", async ({ page }) => {
     /*  await page.getByRole("link", { name: "Duti Setem " }).click();
     await page.waitForTimeout(2000);
     await page.getByRole("link", { name: "Taksiran Duti Setem" }).click(); */
-    //  await page.goto("https://hitspre2.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
-    await page.goto("https://hitsdev.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
+    await page.goto("https://hitspre2.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
+
     await page.waitForTimeout(5000);
     /*   await page
       .getByRole("link", { name: "Carian" })
@@ -562,8 +585,7 @@ test("test", async ({ page }) => {
     await page.getByRole("link", { name: "Carian" }).click();
     await page.waitForTimeout(2000); */
     await page.goto(
-      // "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
-      "https://hitsdev.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
+      "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
     await page.waitForTimeout(2000);
     await page.getByRole("radio", { name: "No TIN" }).check();
@@ -677,8 +699,7 @@ test("test", async ({ page }) => {
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByRole("link", { name: "Carian" }).click(); */
     await page.goto(
-      // "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
-      "https://hitsdev.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
+      "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
     await page.waitForTimeout(2000);
     await page
@@ -755,8 +776,7 @@ test("test", async ({ page }) => {
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByRole("link", { name: "Carian" }).click(); */
     await page.goto(
-      // "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
-      "https://hitsdev.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
+      "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
     await page.waitForTimeout(2000);
     await page.getByRole("radio", { name: "No TIN" }).check();
@@ -787,8 +807,7 @@ test("test", async ({ page }) => {
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByRole("link", { name: "Carian" }).click(); */
     await page.goto(
-      //  "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
-      "https://hitsdev.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
+      "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
   }
 });
