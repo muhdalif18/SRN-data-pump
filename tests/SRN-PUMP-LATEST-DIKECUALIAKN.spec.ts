@@ -375,6 +375,7 @@ test("test", async ({ page }) => {
 
     // Open calendar and pick the first enabled day in the currently shown month
     await page.locator("#section1 input[placeholder='dd/MM/yyyy']").click();
+    await page.waitForTimeout(3000);
     await openCal.waitFor({ state: "visible", timeout: 20000 });
     await openCal
       .locator(
