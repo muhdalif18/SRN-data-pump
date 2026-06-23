@@ -41,6 +41,9 @@ test("test", async ({ page }) => {
 
   //EDS SIDE
   await page.goto("https://mytax-dev.hasil.gov.my/web/");
+  await page.waitForTimeout(3000);
+  await page.reload();
+  await page.waitForTimeout(6000);
   await page
     .getByRole("combobox")
     .waitFor({ state: "visible", timeout: 20000 });
@@ -59,6 +62,9 @@ test("test", async ({ page }) => {
     .getByRole("textbox", { name: "No. Pengenalan" })
     .fill("951004146116");
   await page.waitForTimeout(2000);
+  await page
+    .getByRole("button", { name: "Hantar" })
+    .waitFor({ state: "visible", timeout: 20000 });
   await page.getByRole("button", { name: "Hantar" }).click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
@@ -163,7 +169,7 @@ test("test", async ({ page }) => {
     );
   }
 
-  for (let i = 1; i <= 40; i++) {
+  for (let i = 1; i <= 400; i++) {
     const flowType = FLOW_PATTERN[(i - 1) % FLOW_PATTERN.length];
     const isPenalty = flowType === "PENALTY";
     const isDutiDikecualikan = flowType === "DUTI_DIKECUALIKAN";
@@ -685,11 +691,12 @@ test("test", async ({ page }) => {
     await page.getByRole("button", { name: "Prebiu Notis" }).click();
     await page.waitForTimeout(5000);
 
-    await page
+    /* await page
       .locator("i.fa-times")
       .waitFor({ state: "visible", timeout: 20000 });
     await page.locator("i.fa-times").click();
     await page.waitForTimeout(2000);
+    */
     await page
       .getByRole("button", { name: "Hantar" })
       .waitFor({ state: "visible", timeout: 20000 });
