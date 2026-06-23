@@ -327,7 +327,7 @@ test("test", async ({ page }) => {
 
     await page
       .getByRole("radio", { name: "Ada", exact: true })
-      .waitFor({ state: "visible", timeout: 20000 });
+      .waitFor({ state: "visible", timeout: 10000 });
 
     // Generate random numbers between 5-7 digits
     const randomDigits = Math.floor(Math.random() * 3) + 4; // Random between 5-7
@@ -416,6 +416,11 @@ test("test", async ({ page }) => {
     await page.waitForTimeout(5000);
 
     await page.getByRole("button", { name: "Seterusnya " }).click();
+
+    await page
+      .locator("h5.mb-3.fw-bold", { hasText: "Peremitan / Pengecualian" })
+      .waitFor({ state: "visible", timeout: 10000 });
+
     /*  await page.getByRole("radio", { name: "Ada", exact: true }).check();
     await page.getByRole("radio", { name: "Tiada" }).check(); */
     await page.getByRole("button", { name: "Seterusnya " }).click();

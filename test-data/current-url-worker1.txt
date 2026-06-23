@@ -1,84 +1,18 @@
 Stamping Submission URLs
 ========================
 
-SRN: 9992623991118162
-Nama Pemegang SRN: USER STDS Pahang 7
-Nama Pemegang SRN (Endorsement): USER STDS 31
-SRN: 9992625965772723
-Nama Pemegang SRN: USER STDS Pahang 3
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 2
-SRN: 9992613920625736
-Nama Pemegang SRN: USER STDS Pahang 5
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 8
-SRN: 9992614070866368
-Nama Pemegang SRN: USER STDS Pahang 7
-Nama Pemegang SRN (Endorsement): USER STDS 23
-SRN: 9992685352053429
+SRN: 9992630000867542
 Nama Pemegang SRN: USER STDS Pahang 3
 Nama Pemegang SRN (Endorsement): USER STDS 31
-SRN: 9992695995497941
+SRN: 9992655714124099
 Nama Pemegang SRN: USER STDS Pahang 5
 Nama Pemegang SRN (Endorsement): USER STDS Pahang 2
-SRN: 9992698258655693
+SRN: 9992672124446187
 Nama Pemegang SRN: USER STDS Pahang 7
 Nama Pemegang SRN (Endorsement): USER STDS Pahang 8
-SRN: 9992628642558999
+SRN: 9992657673943314
 Nama Pemegang SRN: USER STDS Pahang 3
 Nama Pemegang SRN (Endorsement): USER STDS 23
-SRN: 9992630741832282
+SRN: 9992616112735023
 Nama Pemegang SRN: USER STDS Pahang 5
 Nama Pemegang SRN (Endorsement): USER STDS 31
-SRN: 9992642532642331
-Nama Pemegang SRN: USER STDS Pahang 7
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 2
-SRN: 9992680852456691
-Nama Pemegang SRN: USER STDS Pahang 3
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 8
-SRN: 9992687214899280
-Nama Pemegang SRN: USER STDS Pahang 5
-Nama Pemegang SRN (Endorsement): USER STDS 23
-SRN: 9992676474011696
-Nama Pemegang SRN: USER STDS Pahang 7
-Nama Pemegang SRN (Endorsement): USER STDS 31
-SRN: 9992656145693132
-Nama Pemegang SRN: USER STDS Pahang 3
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 2
-SRN: 9992638441513681
-Nama Pemegang SRN: USER STDS Pahang 5
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 8
-SRN: 9992618997012311
-Nama Pemegang SRN: USER STDS Pahang 7
-Nama Pemegang SRN (Endorsement): USER STDS 23
-SRN: 9992687735960380
-Nama Pemegang SRN: USER STDS Pahang 3
-Nama Pemegang SRN (Endorsement): USER STDS 31
-SRN: 9992685059879336
-Nama Pemegang SRN: USER STDS Pahang 5
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 2
-SRN: 9992641554861220
-Nama Pemegang SRN: USER STDS Pahang 7
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 8
-SRN: 9992675821421607
-Nama Pemegang SRN: USER STDS Pahang 3
-Nama Pemegang SRN (Endorsement): USER STDS 23
-SRN: 9992658218628735
-Nama Pemegang SRN: USER STDS Pahang 5
-Nama Pemegang SRN (Endorsement): USER STDS 31
-SRN: 9992673815246425
-Nama Pemegang SRN: USER STDS Pahang 7
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 2
-SRN: 9992618756369708
-Nama Pemegang SRN: USER STDS Pahang 3
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 8
-SRN: 9992657702577815
-Nama Pemegang SRN: USER STDS Pahang 5
-Nama Pemegang SRN (Endorsement): USER STDS 23
-SRN: 9992675821483396
-Nama Pemegang SRN: USER STDS Pahang 7
-Nama Pemegang SRN (Endorsement): USER STDS 31
-SRN: 9992653697762136
-Nama Pemegang SRN: USER STDS Pahang 3
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 2
-SRN: 9992689652119088
-Nama Pemegang SRN: USER STDS Pahang 5
-Nama Pemegang SRN (Endorsement): USER STDS Pahang 8
