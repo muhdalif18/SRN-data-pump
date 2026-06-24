@@ -503,6 +503,8 @@ test("test", async ({ page }) => {
     //HITS SIDE
     await page.goto("https://hitspre2.hasil.gov.my/Dashboard/Login");
 
+    await page.waitForTimeout(5000);
+
     await page.locator(".login-screen").click();
     await page.locator("#Input_UsernameVal").click();
     await page

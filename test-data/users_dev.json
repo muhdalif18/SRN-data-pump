@@ -29,45 +29,45 @@
   },
   {
     "nama": "USER STDS 5",
-    "role": "JABATAN OPERASI SETEM & CKHT",
+    "role": "JABATAN TEKNOLOGI MAKLUMAT",
     "loginId": "userstds5@hasil.gov.my",
     "password": "990101019005",
     "cawangan": "-"
   },
   {
     "nama": "USER STDS 6",
-    "role": "JABATAN OPERASI SETEM & CKHT",
+    "role": "JABATAN TEKNOLOGI MAKLUMAT",
     "loginId": "userstds6@hasil.gov.my",
     "password": "990101019006",
     "cawangan": "-"
   },
   {
     "nama": "USER STDS 7",
-    "role": "JABATAN OPERASI SETEM & CKHT",
+    "role": "JABATAN TEKNOLOGI MAKLUMAT",
     "loginId": "userstds7@hasil.gov.my",
     "password": "990101019007",
     "cawangan": "-"
   },
   {
     "nama": "USER STDS 8",
-    "role": "Pegawai",
+    "role": "JABATAN TEKNOLOGI MAKLUMAT",
     "loginId": "userstds8@hasil.gov.my",
     "password": "990101019008",
-    "cawangan": "Kuala Lumpur"
+    "cawangan": "-"
   },
   {
     "nama": "USER STDS 9",
-    "role": "Pegawai",
+    "role": "JABATAN TEKNOLOGI MAKLUMAT",
     "loginId": "userstds9@hasil.gov.my",
     "password": "990101019009",
-    "cawangan": "Kuala Lumpur"
+    "cawangan": "-"
   },
   {
     "nama": "USER STDS 10",
-    "role": "Pegawai",
+    "role": "JABATAN TEKNOLOGI MAKLUMAT",
     "loginId": "userstds10@hasil.gov.my",
     "password": "990101019010",
-    "cawangan": "Kuala Lumpur"
+    "cawangan": "-"
   },
   {
     "nama": "USER STDS 11",
@@ -98,35 +98,31 @@
     "cawangan": "Selangor"
   },
   {
-    "nama": "USER STDS 19",
-    "loginId": "userstds19@hasil.gov.my",
-    "password": "990101019019",
-    "cawangan": "Selangor"
+    "nama": "USER STDS 15",
+    "role": "Pegawai",
+    "loginId": "userstds15@hasil.gov.my",
+    "password": "990101019015",
+    "cawangan": "Kuala Lumpur"
   },
   {
-    "nama": "USER STDS 21",
-    "loginId": "userstds21@hasil.gov.my",
-    "password": "990101019021",
-    "cawangan": "Selangor"
+    "nama": "USER STDS 17",
+    "role": "JPPH",
+    "loginId": "userstds17@hasil.gov.my",
+    "password": "990101019017",
+    "cawangan": "-"
   },
   {
     "nama": "USER STDS 22",
+    "role": "Pegawai",
     "loginId": "userstds22@hasil.gov.my",
     "password": "990101019022",
-    "cawangan": "Selangor"
-  },
-  {
-    "nama": "USER STDS 23",
-    "role": "Pegawai",
-    "loginId": "userstds23@hasil.gov.my",
-    "password": "990101019023",
     "cawangan": "Pahang"
   },
   {
-    "nama": "USER STDS 24",
+    "nama": "USER STDS 23",
     "role": "Pembantu Pegawai",
-    "loginId": "userstds24@hasil.gov.my",
-    "password": "990101019024",
+    "loginId": "userstds23@hasil.gov.my",
+    "password": "990101019023",
     "cawangan": "Pahang"
   },
   {
@@ -242,48 +238,6 @@
     "cawangan": "Perlis"
   },
   {
-    "nama": "USER STDS KL",
-    "role": "Pegawai",
-    "loginId": "userstds_kl_pegawai@hasil.gov.my",
-    "password": "900101019009",
-    "cawangan": "Kuala Lumpur"
-  },
-  {
-    "nama": "USER STDS KL 2",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_kl_pembantupegawai@hasil.gov.my",
-    "password": "900101019010",
-    "cawangan": "Kuala Lumpur"
-  },
-  {
-    "nama": "USER STDS KL 3",
-    "role": "Pengurus",
-    "loginId": "userstds_kl_pengurus@hasil.gov.my",
-    "password": "900101019018",
-    "cawangan": "Kuala Lumpur"
-  },
-  {
-    "nama": "USER STDS KL 4",
-    "role": "Pengurus",
-    "loginId": "userstds_kl_pr@hasil.gov.my",
-    "password": "900101019021",
-    "cawangan": "Kuala Lumpur"
-  },
-  {
-    "nama": "USER STDS KL 5",
-    "role": "Pegawai",
-    "loginId": "userstds_kl_pg@hasil.gov.my",
-    "password": "900101019022",
-    "cawangan": "Kuala Lumpur"
-  },
-  {
-    "nama": "USER STDS KL 6",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_kl_ppg@hasil.gov.my",
-    "password": "900101019023",
-    "cawangan": "Kuala Lumpur"
-  },
-  {
     "nama": "USER STDS KL 7",
     "role": "Pembantu Pegawai",
     "loginId": "userstds_kl_ppg7@hasil.gov.my",
@@ -317,249 +271,6 @@
     "loginId": "userstds_kl_pg2@hasil.gov.my",
     "password": "900101019052",
     "cawangan": "Kuala Lumpur"
-  },
-  {
-    "nama": "USER STDS JOHOR",
-    "role": "Pengurus",
-    "loginId": "userstds_johor_pengurus@hasil.gov.my",
-    "password": "900101019001",
-    "cawangan": "Johor"
-  },
-  {
-    "nama": "USER STDS JOHOR 2",
-    "role": "Pegawai",
-    "loginId": "userstds_johor_pegawai@hasil.gov.my",
-    "password": "900101019002",
-    "cawangan": "Johor"
-  },
-  {
-    "nama": "USER STDS JOHOR 3",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_johor_pembantupegawai@hasil.gov.my",
-    "password": "900101019019",
-    "cawangan": "Johor"
-  },
-  {
-    "nama": "USER STDS JOHOR 4",
-    "role": "Pengurus",
-    "loginId": "userstds_johor_pr@hasil.gov.my",
-    "password": "900101019030",
-    "cawangan": "Johor"
-  },
-  {
-    "nama": "USER STDS JOHOR 5",
-    "role": "Pegawai",
-    "loginId": "userstds_johor_pg@hasil.gov.my",
-    "password": "900101019031",
-    "cawangan": "Johor"
-  },
-  {
-    "nama": "USER STDS JOHOR 6",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_johor_ppg@hasil.gov.my",
-    "password": "900101019032",
-    "cawangan": "Johor"
-  },
-  {
-    "nama": "USER STDS KOTA KINABALU",
-    "role": "Pegawai",
-    "loginId": "userstds_kk_pegawai@hasil.gov.my",
-    "password": "900101019013",
-    "cawangan": "Sabah"
-  },
-  {
-    "nama": "USER STDS KOTA KINABALU 2",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_kk_pembantupegawai@hasil.gov.my",
-    "password": "900101019014",
-    "cawangan": "Sabah"
-  },
-  {
-    "nama": "USER STDS PAHANG 1",
-    "role": "Pengurus",
-    "loginId": "userstds_pahang_pr@hasil.gov.my",
-    "password": "900101019039",
-    "cawangan": "Pahang"
-  },
-  {
-    "nama": "USER STDS PAHANG 2",
-    "role": "Pegawai",
-    "loginId": "userstds_pahang_pg@hasil.gov.my",
-    "password": "900101019040",
-    "cawangan": "Pahang"
-  },
-  {
-    "nama": "USER STDS PAHANG 3",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_pahang_ppg@hasil.gov.my",
-    "password": "900101019041",
-    "cawangan": "Pahang"
-  },
-  {
-    "nama": "USER STDS PERAK 1",
-    "role": "Pengurus",
-    "loginId": "userstds_perak_pr@hasil.gov.my",
-    "password": "900101019027",
-    "cawangan": "Perak"
-  },
-  {
-    "nama": "USER STDS PERAK 2",
-    "role": "Pegawai",
-    "loginId": "userstds_perak_pg@hasil.gov.my",
-    "password": "900101019028",
-    "cawangan": "Perak"
-  },
-  {
-    "nama": "USER STDS PERAK 3",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_perak_ppg@hasil.gov.my",
-    "password": "900101019029",
-    "cawangan": "Perak"
-  },
-  {
-    "nama": "USER STDS PULAU PINANG 1",
-    "role": "Pengurus",
-    "loginId": "userstds_pp_pr@hasil.gov.my",
-    "password": "900101019024",
-    "cawangan": "Pulau Pinang"
-  },
-  {
-    "nama": "USER STDS PULAU PINANG 2",
-    "role": "Pegawai",
-    "loginId": "userstds_pp_pg@hasil.gov.my",
-    "password": "900101019025",
-    "cawangan": "Pulau Pinang"
-  },
-  {
-    "nama": "USER STDS PULAU PINANG 3",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_pp_ppg@hasil.gov.my",
-    "password": "900101019026",
-    "cawangan": "Pulau Pinang"
-  },
-  {
-    "nama": "USER STDS PUTRAJAYA 1",
-    "role": "Pengurus",
-    "loginId": "userstds_wpj_pr@hasil.gov.my",
-    "password": "900101019045",
-    "cawangan": "Putrajaya"
-  },
-  {
-    "nama": "USER STDS PUTRAJAYA 2",
-    "role": "Pegawai",
-    "loginId": "userstds_wpj_pg@hasil.gov.my",
-    "password": "900101019046",
-    "cawangan": "Putrajaya"
-  },
-  {
-    "nama": "USER STDS PUTRAJAYA 3",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_wpj_ppg@hasil.gov.my",
-    "password": "900101019047",
-    "cawangan": "Putrajaya"
-  },
-  {
-    "nama": "USER STDS SABAH 1",
-    "role": "Pengurus",
-    "loginId": "userstds_sabah_pr@hasil.gov.my",
-    "password": "900101019033",
-    "cawangan": "Sabah"
-  },
-  {
-    "nama": "USER STDS SABAH 2",
-    "role": "Pegawai",
-    "loginId": "userstds_sabah_pg@hasil.gov.my",
-    "password": "900101019034",
-    "cawangan": "Sabah"
-  },
-  {
-    "nama": "USER STDS SABAH 3",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_sabah_ppg@hasil.gov.my",
-    "password": "900101019035",
-    "cawangan": "Sabah"
-  },
-  {
-    "nama": "USER STDS SARAWAK",
-    "role": "Pegawai",
-    "loginId": "userstds_sarawak_pegawai@hasil.gov.my",
-    "password": "900101019003",
-    "cawangan": "Sarawak"
-  },
-  {
-    "nama": "USER STDS SARAWAK 1",
-    "role": "Pengurus",
-    "loginId": "userstds_srwk_pr@hasil.gov.my",
-    "password": "900101019036",
-    "cawangan": "Sarawak"
-  },
-  {
-    "nama": "USER STDS SARAWAK 1",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_sarawak_pembantupegawai@hasil.gov.my",
-    "password": "900101019004",
-    "cawangan": "Sarawak"
-  },
-  {
-    "nama": "USER STDS SARAWAK 2",
-    "role": "Pegawai",
-    "loginId": "userstds_srwk_pg@hasil.gov.my",
-    "password": "900101019037",
-    "cawangan": "Sarawak"
-  },
-  {
-    "nama": "USER STDS SARAWAK 3",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_srwk_ppg@hasil.gov.my",
-    "password": "900101019038",
-    "cawangan": "Sarawak"
-  },
-  {
-    "nama": "USER STDS SELANGOR 4",
-    "role": "Pengurus",
-    "loginId": "userstds_selangor_pr@hasil.gov.my",
-    "password": "900101019042",
-    "cawangan": "Selangor"
-  },
-  {
-    "nama": "USER STDS SELANGOR 5",
-    "role": "Pegawai",
-    "loginId": "userstds_selangor_pg@hasil.gov.my",
-    "password": "900101019043",
-    "cawangan": "Selangor"
-  },
-  {
-    "nama": "USER STDS SELANGOR 6",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_selangor_ppg@hasil.gov.my",
-    "password": "900101019044",
-    "cawangan": "Selangor"
-  },
-  {
-    "nama": "USER STDS TERENGGANU",
-    "role": "Pegawai",
-    "loginId": "userstds_terengganu_pegawai@hasil.gov.my",
-    "password": "900101019011",
-    "cawangan": "Terengganu"
-  },
-  {
-    "nama": "USER STDS TERENGGANU 2",
-    "role": "Pembantu Pegawai",
-    "loginId": "userstds_terengganu_pembantupegawai@hasil.gov.my",
-    "password": "900101019012",
-    "cawangan": "Terengganu"
-  },
-  {
-    "nama": "USERSTDS15@HASIL.GOV.MY",
-    "loginId": "userstds15@hasil.gov.my",
-    "password": "990101019015",
-    "cawangan": "Pahang"
-  },
-  {
-    "nama": "USERSTDS16@HASIL.GOV.MY",
-    "loginId": "userstds16@hasil.gov.my",
-    "password": "990101019016",
-    "cawangan": "Pahang"
   },
   {
     "nama": "USER STDS Pungutan 1",
@@ -602,20 +313,6 @@
     "loginId": "userstds_pungutan_pg3@hasil.gov.my",
     "password": "900101019129",
     "cawangan": "Selangor"
-  },
-  {
-    "nama": "SAYYIDATINA AL HURUL AINA BINTI ALZAHARI",
-    "role": "Pegawai",
-    "loginId": "userjpph@gmail.com.my",
-    "password": "900000000001",
-    "cawangan": "-"
-  },
-  {
-    "nama": "SAYYIDATINA AL HURUL AINA BINTI ALZAHARI",
-    "role": "PEGAWAI JPPH (TEST)",
-    "loginId": "userjpph@gmail.com",
-    "password": "900306015164",
-    "cawangan": "-"
   },
   {
     "nama": "USER STDS Pulau Pinang 4",

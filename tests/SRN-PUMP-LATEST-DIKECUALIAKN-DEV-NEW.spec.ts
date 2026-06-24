@@ -41,6 +41,9 @@ test("test", async ({ page }) => {
 
   //EDS SIDE
   await page.goto("https://mytax-dev.hasil.gov.my/web/");
+  await page.waitForTimeout(3000);
+  await page.reload();
+  await page.waitForTimeout(6000);
   await page
     .getByRole("combobox")
     .waitFor({ state: "visible", timeout: 20000 });
@@ -59,6 +62,9 @@ test("test", async ({ page }) => {
     .getByRole("textbox", { name: "No. Pengenalan" })
     .fill("951004146116");
   await page.waitForTimeout(2000);
+  await page
+    .getByRole("button", { name: "Hantar" })
+    .waitFor({ state: "visible", timeout: 20000 });
   await page.getByRole("button", { name: "Hantar" }).click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
@@ -103,6 +109,7 @@ test("test", async ({ page }) => {
     .waitFor({ state: "visible", timeout: 20000 });
 
   await page.getByText("Duti Setem (DEV)").click();
+
   // Wait for new tab to open when clicking e-Duti Setem
   const [newPage] = await Promise.all([
     page.context().waitForEvent("page"),
@@ -500,12 +507,10 @@ test("test", async ({ page }) => {
 
     await page.locator(".login-screen").click();
     await page.locator("#Input_UsernameVal").click();
-    await page
-      .locator("#Input_UsernameVal")
-      .fill("userstds_pahang_pr@hasil.gov.my");
+    await page.locator("#Input_UsernameVal").fill("userstds1@hasil.gov.my");
     await page.locator("#Input_UsernameVal").click();
     await page.locator("#Input_PasswordVal").click();
-    await page.locator("#Input_PasswordVal").fill("900101019039");
+    await page.locator("#Input_PasswordVal").fill("990101019001");
     await page.getByRole("button", { name: "Login" }).click();
     await page.waitForTimeout(2000);
     /*  await page.getByRole("link", { name: "Duti Setem " }).click();
@@ -686,11 +691,11 @@ test("test", async ({ page }) => {
     await page.getByRole("button", { name: "Prebiu Notis" }).click();
     await page.waitForTimeout(5000);
 
-    await page
+    /*  await page
       .locator("i.fa-times")
       .waitFor({ state: "visible", timeout: 20000 });
     await page.locator("i.fa-times").click();
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(2000); */
     await page
       .getByRole("button", { name: "Hantar" })
       .waitFor({ state: "visible", timeout: 20000 });
