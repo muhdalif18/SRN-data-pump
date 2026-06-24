@@ -541,6 +541,7 @@ test("test", async ({ page }) => {
     const namaPemegangElement = await page.locator(
       'div.columns-item:has-text("Nama Pemegang SRN") + div.columns-item span[data-expression][style*="font-weight: bold"]',
     );
+    await namaPemegangElement.waitFor({ state: "visible", timeout: 20000 });
     const namaPemegang = await namaPemegangElement.textContent();
     const namaPemegangValue = namaPemegang?.trim() || "";
     console.log(`Nama Pemegang SRN: ${namaPemegangValue}`);
@@ -730,6 +731,10 @@ test("test", async ({ page }) => {
     const namaPemegangElementEndorse = await page.locator(
       'div.columns-item:has-text("Nama Pemegang SRN") + div.columns-item span[data-expression][style*="font-weight: bold"]',
     );
+    await namaPemegangElementEndorse.waitFor({
+      state: "visible",
+      timeout: 20000,
+    });
     const namaPemegangEndorse = await namaPemegangElementEndorse.textContent();
     const namaPemegangValueEndorse = namaPemegangEndorse?.trim() || "";
     console.log(`Nama Pemegang SRN (Endorsement): ${namaPemegangValueEndorse}`);
