@@ -61,6 +61,7 @@ test("test", async ({ page }) => {
   await page
     .getByRole("textbox", { name: "No. Pengenalan" })
     .fill("951004146116");
+  //.fill("590511025908");
   await page.waitForTimeout(2000);
   await page
     .getByRole("button", { name: "Hantar" })
@@ -75,6 +76,7 @@ test("test", async ({ page }) => {
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
     .fill("Password123");
+  //.fill("Passw0rd");
   await page
     .getByText("Percubaan Log Masuk Anda : 0 /")
     .waitFor({ state: "visible", timeout: 20000 });
@@ -692,11 +694,11 @@ test("test", async ({ page }) => {
     await page.getByRole("button", { name: "Prebiu Notis" }).click();
     await page.waitForTimeout(5000);
 
-    /*  await page
+    await page
       .locator("i.fa-times")
       .waitFor({ state: "visible", timeout: 20000 });
     await page.locator("i.fa-times").click();
-    await page.waitForTimeout(2000); */
+    await page.waitForTimeout(2000);
     await page
       .getByRole("button", { name: "Hantar" })
       .waitFor({ state: "visible", timeout: 20000 });

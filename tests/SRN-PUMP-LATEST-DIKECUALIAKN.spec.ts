@@ -543,6 +543,7 @@ test("test", async ({ page }) => {
     const namaPemegangElement = await page.locator(
       'div.columns-item:has-text("Nama Pemegang SRN") + div.columns-item span[data-expression][style*="font-weight: bold"]',
     );
+    await namaPemegangElement.waitFor({ state: "visible", timeout: 20000 });
     const namaPemegang = await namaPemegangElement.textContent();
     const namaPemegangValue = namaPemegang?.trim() || "";
     console.log(`Nama Pemegang SRN: ${namaPemegangValue}`);
@@ -693,12 +694,12 @@ test("test", async ({ page }) => {
     await page.getByRole("button", { name: "Prebiu Notis" }).click();
     await page.waitForTimeout(5000);
 
-    /* await page
+    await page
       .locator("i.fa-times")
       .waitFor({ state: "visible", timeout: 20000 });
     await page.locator("i.fa-times").click();
     await page.waitForTimeout(2000);
-    */
+
     await page
       .getByRole("button", { name: "Hantar" })
       .waitFor({ state: "visible", timeout: 20000 });

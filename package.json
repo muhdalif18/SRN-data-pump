@@ -74,6 +74,10 @@
     "srn-pump-latest-dikecualiakn-optimized:forever": "pm2 start ecosystem.config.cjs --only srn-pump-latest-dikecualiakn-optimized-forever",
     "srn-pump-latest-dikecualiakn-optimized:logs": "pm2 logs srn-pump-latest-dikecualiakn-optimized-forever",
     "srn-pump-latest-dikecualiakn-optimized:stop": "pm2 delete srn-pump-latest-dikecualiakn-optimized-forever",
+    "srn-pump-latest-dikecualiakn-dev-new:one": "playwright test tests/SRN-PUMP-LATEST-DIKECUALIAKN-DEV-NEW.spec.ts",
+    "srn-pump-latest-dikecualiakn-dev-new:forever": "pm2 start ecosystem.config.cjs --only srn-pump-latest-dikecualiakn-dev-new-forever",
+    "srn-pump-latest-dikecualiakn-dev-new:logs": "pm2 logs srn-pump-latest-dikecualiakn-dev-new-forever",
+    "srn-pump-latest-dikecualiakn-dev-new:stop": "pm2 delete srn-pump-latest-dikecualiakn-dev-new-forever",
     "bots:all": "pm2 start ecosystem.config.cjs",
     "bots:stop-all": "pm2 delete ecosystem.config.cjs",
     "bots:status": "pm2 status"
