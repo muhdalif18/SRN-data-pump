@@ -127,6 +127,14 @@ module.exports = {
       autorestart: true,
       restart_delay: 10000,
       time: true,
+    },
+    {
+      name: "srn-pump-normal-forever",
+      script: "cmd.exe",
+      args: "/c npx playwright test tests/SRN-PUMP-NORMAL.spec.ts",
+      autorestart: true,
+      restart_delay: 10000,
+      time: true,
     }
   ],
 };
