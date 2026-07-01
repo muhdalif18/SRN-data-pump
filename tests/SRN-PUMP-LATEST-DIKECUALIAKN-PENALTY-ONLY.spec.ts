@@ -1,29 +1,11 @@
 import { test } from "@playwright/test";
 import * as fs from "fs";
 
-const namaList = ["Form of Transfer of Securites"];
+// Date used for 20% penalty (January — oldest, highest penalty)
+const PENALTY_DATE_20 = "01/01/2026";
 
-// Flow pattern: repeats every 4 iterations
-// 1=Duti Dikecualikan, 2=No penalty, 3=Penalty, 4=No penalty
-type FlowType = "NO_PENALTY" | "PENALTY" | "DUTI_DIKECUALIKAN";
-const FLOW_PATTERN: FlowType[] = [
-  "DUTI_DIKECUALIKAN",
-  "NO_PENALTY",
-  "PENALTY",
-  "NO_PENALTY",
-];
-
-// Date used for "tarikh penalti" (January — old enough to trigger penalty)
-const PENALTY_DATE = "01/01/2026";
-
-// Format today's date as dd/MM/yyyy for "tarikh biasa"
-function getCurrentDate(): string {
-  const d = new Date();
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
-}
+// Date used for 10% penalty (May — more recent, lower penalty)
+const PENALTY_DATE_10 = "01/05/2026";
 
 test("test", async ({ page }) => {
   test.setTimeout(4 * 60 * 60 * 1000); // 4 hours
@@ -170,22 +152,13 @@ test("test", async ({ page }) => {
   }
 
   for (let i = 1; i <= 400; i++) {
-    const flowType = FLOW_PATTERN[(i - 1) % FLOW_PATTERN.length];
-    const isPenalty = flowType === "PENALTY";
-    const isDutiDikecualikan = flowType === "DUTI_DIKECUALIKAN";
-    const dateToUse = isPenalty ? PENALTY_DATE : getCurrentDate();
-    const docTitlePrefix = isPenalty
-      ? "Penalty "
-      : isDutiDikecualikan
-        ? "Duti Dikecualikan "
-        : "";
-    const flowLabel = isPenalty
-      ? "PENALTI"
-      : isDutiDikecualikan
-        ? "DUTI DIKECUALIKAN"
-        : "NO PENALTY";
+    // Alternate between 10% penalty (1 May) and 20% penalty (1 Jan)
+    const isOdd = i % 2 === 1;
+    const penaltyDate = isOdd ? PENALTY_DATE_10 : PENALTY_DATE_20;
+    const penaltyPercent = isOdd ? "10%" : "20%";
+
     console.log(
-      `--- Loop iteration ${i} of 400 --- [${flowLabel}] date=${dateToUse}`,
+      `--- Loop iteration ${i} of 400 --- [PENALTI ${penaltyPercent}] date=${penaltyDate}`,
     );
 
     await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
@@ -218,9 +191,7 @@ test("test", async ({ page }) => {
     await page.locator("#DocTitleStep0").click();
     await page
       .locator("#DocTitleStep0")
-      .fill(
-        `${docTitlePrefix}DEMO FOR OBJECTION AND APPEAL. STRICLY DONT USE. ${i}`,
-      );
+      .fill(`PBB TESTING ${i}`);
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
@@ -229,7 +200,7 @@ test("test", async ({ page }) => {
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
-      .fill(dateToUse);
+      .fill(penaltyDate);
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
@@ -352,23 +323,18 @@ test("test", async ({ page }) => {
     await page.locator("#StampingForm_formC_2_ShrTrf").fill("30000000");
     await page.getByRole("radio", { name: "Ringgit Malaysia" }).check();
     await page.getByRole("textbox", { name: "0.00" }).click();
-    // Use a fixed amount for penalty flows (picked once per run), random otherwise
+    // Always use fixed penalty amount for all iterations
     let amountToUse: number;
-    if (isPenalty) {
-      if (fixedPenaltyAmount === null) {
-        fixedPenaltyAmount =
-          Math.floor(Math.random() * (900000000 - 100000000 + 1)) + 100000000;
-        console.log(`Fixed penalty amount selected: ${fixedPenaltyAmount}`);
-        fs.appendFileSync(
-          "./test-data/srn-permanent-log.txt",
-          `[${new Date().toISOString()}] Fixed penalty amount selected: ${fixedPenaltyAmount}\n`,
-        );
-      }
-      amountToUse = fixedPenaltyAmount;
-    } else {
-      amountToUse =
+    if (fixedPenaltyAmount === null) {
+      fixedPenaltyAmount =
         Math.floor(Math.random() * (900000000 - 100000000 + 1)) + 100000000;
+      console.log(`Fixed penalty amount selected: ${fixedPenaltyAmount}`);
+      fs.appendFileSync(
+        "./test-data/srn-permanent-log.txt",
+        `[${new Date().toISOString()}] Fixed penalty amount selected: ${fixedPenaltyAmount}\n`,
+      );
     }
+    amountToUse = fixedPenaltyAmount;
 
     await page
       .getByRole("textbox", { name: "0.00" })
@@ -481,7 +447,7 @@ test("test", async ({ page }) => {
     await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
     await page.getByRole("heading", { name: "Senarai Permohonan" }).click();
 
-    // Extract and log the SRN - ONLY FOR PENALTY CASES
+    // Extract and log the SRN - ALL are PENALTY cases
     await page.waitForTimeout(2000);
     const srnElement = await page
       .locator("p.modern-clickable-stamp[data-search]")
@@ -489,18 +455,14 @@ test("test", async ({ page }) => {
     const srn = await srnElement.textContent();
     const srnValue = srn?.trim() || "";
 
-    if (isPenalty) {
-      console.log(`SRN (PENALTY): ${srnValue}`);
-      fs.appendFileSync(
-        "./test-data/current-url-worker1.txt",
-        `SRN: ${srnValue}\n`,
-      );
-      fs.appendFileSync(
-        "./test-data/srn-permanent-log.txt",
-        `[${new Date().toISOString()}] Loop ${i} | SRN: ${srnValue} | ${flowLabel}\n`,
-      );
-    } else {
-      console.log(`SRN (SKIPPED - ${flowLabel}): ${srnValue}`);
-    }
+    console.log(`SRN (PENALTY ${penaltyPercent}): ${srnValue}`);
+    fs.appendFileSync(
+      "./test-data/current-url-worker1.txt",
+      `SRN: ${srnValue} (${penaltyPercent})\n`,
+    );
+    fs.appendFileSync(
+      "./test-data/srn-permanent-log.txt",
+      `[${new Date().toISOString()}] Loop ${i} | SRN: ${srnValue} | PENALTI ${penaltyPercent}\n`,
+    );
   }
 });
