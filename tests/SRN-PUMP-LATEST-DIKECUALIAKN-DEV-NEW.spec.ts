@@ -13,8 +13,10 @@ const FLOW_PATTERN: FlowType[] = [
   "NO_PENALTY",
 ];
 
-// Date used for "tarikh penalti" (January — old enough to trigger penalty)
-const PENALTY_DATE = "01/01/2026";
+// Penalty scenarios alternate between two dates each time "PENALTY" fires:
+// 1 January -> Penalti 20%, 1 May -> Penalti 10%
+const PENALTY_DATE_JAN = "01/01/2026";
+const PENALTY_DATE_MAY = "01/05/2026";
 
 // Format today's date as dd/MM/yyyy for "tarikh biasa"
 function getCurrentDate(): string {
@@ -171,18 +173,33 @@ test("test", async ({ page }) => {
     );
   }
 
+  let penaltyOccurrenceCount = 0;
+
   for (let i = 1; i <= 40; i++) {
     const flowType = FLOW_PATTERN[(i - 1) % FLOW_PATTERN.length];
     const isPenalty = flowType === "PENALTY";
     const isDutiDikecualikan = flowType === "DUTI_DIKECUALIKAN";
-    const dateToUse = isPenalty ? PENALTY_DATE : getCurrentDate();
+    let isPenaltyJan = false;
+    if (isPenalty) {
+      isPenaltyJan = penaltyOccurrenceCount % 2 === 0;
+      penaltyOccurrenceCount++;
+    }
+    const dateToUse = isPenalty
+      ? isPenaltyJan
+        ? PENALTY_DATE_JAN
+        : PENALTY_DATE_MAY
+      : getCurrentDate();
     const docTitlePrefix = isPenalty
-      ? "Penalty "
+      ? isPenaltyJan
+        ? "Penalti 20% "
+        : "Penalti 10% "
       : isDutiDikecualikan
         ? "Duti Dikecualikan "
         : "";
     const flowLabel = isPenalty
-      ? "PENALTI"
+      ? isPenaltyJan
+        ? "PENALTI 20% (JAN)"
+        : "PENALTI 10% (MAY)"
       : isDutiDikecualikan
         ? "DUTI DIKECUALIKAN"
         : "NO PENALTY";
