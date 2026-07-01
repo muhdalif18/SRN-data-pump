@@ -82,6 +82,10 @@
     "srn-pump-normal:forever": "pm2 start ecosystem.config.cjs --only srn-pump-normal-forever",
     "srn-pump-normal:logs": "pm2 logs srn-pump-normal-forever",
     "srn-pump-normal:stop": "pm2 delete srn-pump-normal-forever",
+    "srn-pump-penalty-only:one": "playwright test tests/SRN-PUMP-LATEST-DIKECUALIAKN-PENALTY-ONLY.spec.ts",
+    "srn-pump-penalty-only:forever": "pm2 start ecosystem.config.cjs --only srn-pump-penalty-only-forever",
+    "srn-pump-penalty-only:logs": "pm2 logs srn-pump-penalty-only-forever",
+    "srn-pump-penalty-only:stop": "pm2 delete srn-pump-penalty-only-forever",
     "bots:all": "pm2 start ecosystem.config.cjs",
     "bots:stop-all": "pm2 delete ecosystem.config.cjs",
     "bots:status": "pm2 status"

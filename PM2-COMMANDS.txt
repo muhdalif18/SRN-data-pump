@@ -1,0 +1,229 @@
+================================================================================
+                    PM2 COMMANDS REFERENCE - SRN DATA PUMP
+================================================================================
+Last Updated: 2026-07-01
+
+================================================================================
+1. E2E
+================================================================================
+Run once:       npm run e2e:one
+Start forever:  npm run e2e:forever
+View logs:      npm run e2e:logs
+Stop:           npm run e2e:stop
+
+================================================================================
+2. LOGIN
+================================================================================
+Run once:       npm run login:one
+Start forever:  npm run login:forever
+View logs:      npm run login:logs
+Stop:           npm run login:stop
+
+================================================================================
+3. STAMPING PERANAN EJEN DUTI SETEM
+================================================================================
+Run once:       npm run stamping-peranan-ejen-duti-setem:one
+Start forever:  npm run stamping-peranan-ejen-duti-setem:forever
+View logs:      npm run stamping-peranan-ejen-duti-setem:logs
+Stop:           npm run stamping-peranan-ejen-duti-setem:stop
+
+================================================================================
+4. STAMPING PERANAN EJEN FIRMA GUAMAN
+================================================================================
+Run once:       npm run stamping-peranan-ejen-firma-guaman:one
+Start forever:  npm run stamping-peranan-ejen-firma-guaman:forever
+View logs:      npm run stamping-peranan-ejen-firma-guaman:logs
+Stop:           npm run stamping-peranan-ejen-firma-guaman:stop
+
+================================================================================
+5. E2E EJEN DUTI SETEM
+================================================================================
+Run once:       npm run e2e-ejen-duti-setem:one
+Start forever:  npm run e2e-ejen-duti-setem:forever
+View logs:      npm run e2e-ejen-duti-setem:logs
+Stop:           npm run e2e-ejen-duti-setem:stop
+
+================================================================================
+6. STAMPING
+================================================================================
+Run once:       npm run stamping:one
+Start forever:  npm run stamping:forever
+View logs:      npm run stamping:logs
+Stop:           npm run stamping:stop
+
+================================================================================
+7. LOGIN2
+================================================================================
+Run once:       npm run login2:one
+Start forever:  npm run login2:forever
+View logs:      npm run login2:logs
+Stop:           npm run login2:stop
+
+================================================================================
+8. E2E PENALTY
+================================================================================
+Run once:       npm run e2e-penalty:one
+Start forever:  npm run e2e-penalty:forever
+View logs:      npm run e2e-penalty:logs
+Stop:           npm run e2e-penalty:stop
+
+================================================================================
+9. E2E COMBINE PENALTI WITHOUT PENALTY
+================================================================================
+Run once:       npm run e2e-combine-penalti-without-penalty:one
+Start forever:  npm run e2e-combine-penalti-without-penalty:forever
+View logs:      npm run e2e-combine-penalti-without-penalty:logs
+Stop:           npm run e2e-combine-penalti-without-penalty:stop
+
+================================================================================
+10. E2E COMBINE PENALTI WITHOUT PENALTY WORKER2
+================================================================================
+Run once:       npm run e2e-combine-penalti-without-penalty-worker2:one
+Start forever:  npm run e2e-combine-penalti-without-penalty-worker2:forever
+View logs:      npm run e2e-combine-penalti-without-penalty-worker2:logs
+Stop:           npm run e2e-combine-penalti-without-penalty-worker2:stop
+
+Multi-Worker Commands:
+Staggered start (60s delay between workers):
+                npm run e2e-combine-penalti-without-penalty:staggered
+Stop both:      npm run e2e-combine-penalti-without-penalty:stop-both
+
+================================================================================
+11. SRN PUMP LATEST
+================================================================================
+Run once:       npm run srn-pump-latest:one
+Start forever:  npm run srn-pump-latest:forever
+View logs:      npm run srn-pump-latest:logs
+Stop:           npm run srn-pump-latest:stop
+
+================================================================================
+12. SRN PUMP PERANAN
+================================================================================
+Run once:       npm run srn-pump-peranan:one
+Start forever:  npm run srn-pump-peranan:forever
+View logs:      npm run srn-pump-peranan:logs
+Stop:           npm run srn-pump-peranan:stop
+
+================================================================================
+13. SRN DEV
+================================================================================
+Run once:       npm run srn-dev:one
+Start forever:  npm run srn-dev:forever
+View logs:      npm run srn-dev:logs
+Stop:           npm run srn-dev:stop
+
+================================================================================
+14. SRN PUMP LATEST DIKECUALIAKN
+================================================================================
+Run once:       npm run srn-pump-latest-dikecualiakn:one
+Start forever:  npm run srn-pump-latest-dikecualiakn:forever
+View logs:      npm run srn-pump-latest-dikecualiakn:logs
+Stop:           npm run srn-pump-latest-dikecualiakn:stop
+
+================================================================================
+15. SRN PUMP LATEST DIKECUALIAKN OPTIMIZED
+================================================================================
+Run once:       npm run srn-pump-latest-dikecualiakn-optimized:one
+Start forever:  npm run srn-pump-latest-dikecualiakn-optimized:forever
+View logs:      npm run srn-pump-latest-dikecualiakn-optimized:logs
+Stop:           npm run srn-pump-latest-dikecualiakn-optimized:stop
+
+================================================================================
+16. SRN PUMP LATEST DIKECUALIAKN DEV NEW
+================================================================================
+Run once:       npm run srn-pump-latest-dikecualiakn-dev-new:one
+Start forever:  npm run srn-pump-latest-dikecualiakn-dev-new:forever
+View logs:      npm run srn-pump-latest-dikecualiakn-dev-new:logs
+Stop:           npm run srn-pump-latest-dikecualiakn-dev-new:stop
+
+================================================================================
+17. SRN PUMP NORMAL
+================================================================================
+Run once:       npm run srn-pump-normal:one
+Start forever:  npm run srn-pump-normal:forever
+View logs:      npm run srn-pump-normal:logs
+Stop:           npm run srn-pump-normal:stop
+
+================================================================================
+18. SRN PUMP PENALTY ONLY ⭐ NEW
+================================================================================
+Run once:       npm run srn-pump-penalty-only:one
+Start forever:  npm run srn-pump-penalty-only:forever
+View logs:      npm run srn-pump-penalty-only:logs
+Stop:           npm run srn-pump-penalty-only:stop
+
+Description:    Creates 400 submissions but only logs SRNs for PENALTY cases.
+                No HITS workflow - runs ~4x faster than full workflow.
+Output files:   - test-data/current-url-worker1.txt
+                - test-data/srn-permanent-log.txt
+
+================================================================================
+GLOBAL PM2 MANAGEMENT COMMANDS
+================================================================================
+Start all bots:         npm run bots:all
+Stop all bots:          npm run bots:stop-all
+Check status:           npm run bots:status
+
+Direct PM2 commands:
+List all processes:     pm2 list
+Monitor dashboard:      pm2 monit
+Restart a process:      pm2 restart <name>
+Delete a process:       pm2 delete <name>
+Delete all processes:   pm2 delete all
+Save PM2 config:        pm2 save
+Resurrect saved:        pm2 resurrect
+Flush logs:             pm2 flush
+Show logs (all):        pm2 logs
+Show logs (specific):   pm2 logs <name>
+
+================================================================================
+USEFUL TIPS
+================================================================================
+1. Always check status before starting: npm run bots:status
+2. To stop a stuck process: pm2 delete <name> (not just stop)
+3. Logs are stored in: %USERPROFILE%\.pm2\logs\
+4. PM2 restart delay is 10 seconds for all processes
+5. All processes have autorestart: true enabled
+6. Use 'pm2 monit' for real-time monitoring with CPU/Memory stats
+
+================================================================================
+ENVIRONMENT VARIABLES
+================================================================================
+Set penalty amount for penalty-only script:
+    set PENALTY_AMOUNT=500000000
+    npm run srn-pump-penalty-only:forever
+
+Default penalty amount if not set: 427183954
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+Process won't stop:
+    pm2 delete <name> --force
+
+Clear all PM2 data:
+    pm2 kill
+
+Check if PM2 daemon is running:
+    pm2 ping
+
+Restart PM2 daemon:
+    pm2 kill
+    pm2 resurrect
+
+View detailed process info:
+    pm2 show <name>
+
+================================================================================
+FILE LOCATIONS
+================================================================================
+PM2 Config:             ecosystem.config.cjs
+Package Scripts:        package.json
+Test Specs:             tests/*.spec.ts
+Output Files:           test-data/current-url-worker*.txt
+Permanent Log:          test-data/srn-permanent-log.txt
+Playwright Report:      playwright-report/
+
+================================================================================
+END OF REFERENCE
+================================================================================
