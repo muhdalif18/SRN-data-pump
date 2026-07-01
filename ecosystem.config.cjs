@@ -135,6 +135,22 @@ module.exports = {
       autorestart: true,
       restart_delay: 10000,
       time: true,
+    },
+    {
+      name: "generate-pdf-forever",
+      script: "cmd.exe",
+      args: "/c node generate-pdf.js",
+      autorestart: true,
+      restart_delay: 10000,
+      time: true,
+    },
+    {
+      name: "srn-pump-latest-dikecualiakn-missing-phone-forever",
+      script: "cmd.exe",
+      args: "/c npx playwright test tests/SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE.spec.ts",
+      autorestart: true,
+      restart_delay: 10000,
+      time: true,
     }
   ],
 };

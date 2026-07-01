@@ -1,0 +1,40 @@
+generate-pdf.js PM2 commands
+=============================
+
+Run once:
+npm run generate-pdf:one
+
+Start with PM2 (auto-restart forever):
+npm run generate-pdf:forever
+
+View logs:
+npm run generate-pdf:logs
+
+Stop:
+npm run generate-pdf:stop
+
+Raw PM2 equivalents:
+pm2 start ecosystem.config.cjs --only generate-pdf-forever
+pm2 logs generate-pdf-forever
+pm2 delete generate-pdf-forever
+
+
+SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE.spec.ts PM2 commands
+=================================================================
+
+Run once:
+npm run srn-pump-latest-dikecualiakn-missing-phone:one
+
+Start with PM2 (auto-restart forever):
+npm run srn-pump-latest-dikecualiakn-missing-phone:forever
+
+View logs:
+npm run srn-pump-latest-dikecualiakn-missing-phone:logs
+
+Stop:
+npm run srn-pump-latest-dikecualiakn-missing-phone:stop
+
+Raw PM2 equivalents:
+pm2 start ecosystem.config.cjs --only srn-pump-latest-dikecualiakn-missing-phone-forever
+pm2 logs srn-pump-latest-dikecualiakn-missing-phone-forever
+pm2 delete srn-pump-latest-dikecualiakn-missing-phone-forever
