@@ -19,15 +19,23 @@ test("test", async ({ page }) => {
   // CONFIGURE YOUR SRN NUMBERS HERE
   // ========================================
   const SRN_LIST = [
-    "9992651164365315",
-    "9992687262053362",
-    "9992623563769456",
-    "9992611444022865",
-    "9992692741743851",
-    "9992610215103769",
-    "9992648464041059",
-    "9992661497000951",
-    "9992680901260439",
+    "9992619476546773",
+    "9992682204597484",
+    "9992652191309483",
+    "9992693561410734",
+    "9992654646441519",
+    "9992668708904929",
+    "9992619492654507",
+    "9992635148396815",
+    "9992674045550119",
+    "9992692111519735",
+    "9992686232293828",
+    "9992648450054503",
+    "9992619210500944",
+    "9992642533687774",
+    "9992660975925714",
+    "9992630022331405",
+    "9992627125669767",
   ];
 
   //EDS SIDE
@@ -156,6 +164,7 @@ test("test", async ({ page }) => {
         .getByRole("textbox", { name: "Sila Masukkan Nombor Rujukan" })
         .fill(currentSRN);
       await page.getByRole("button", { name: "icon Carian" }).click();
+      await page.waitForTimeout(5000);
       await page
         .getByText("Jenis Rayuan Yang Layak")
         .waitFor({ state: "visible", timeout: 20000 });
@@ -165,15 +174,18 @@ test("test", async ({ page }) => {
           "Rayuan Lanjutan Masa Bayaran: Layak membuat permohonan kali pertama",
         )
         .waitFor({ state: "visible", timeout: 20000 });
+      await page.waitForTimeout(5000);
       await page
         .getByText(
           "Rayuan Lanjutan Masa Bayaran: Layak membuat permohonan kali pertama",
         )
         .click();
       await page.getByRole("button", { name: " Mohon" }).click();
+      await page.waitForTimeout(5000);
       await page
         .getByText("Jenis Bantahan dan Rayuan:")
         .waitFor({ state: "visible", timeout: 20000 });
+      await page.waitForTimeout(5000);
       await page.getByText("Jenis Bantahan dan Rayuan:").click();
       await page.getByRole("button", { name: "A. BAHAGIAN A" }).click();
       await page.getByText("Tarikh Cadangan Lanjutan Masa").click();
