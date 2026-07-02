@@ -1,0 +1,505 @@
+================================================================================
+                        PM2 COMMAND GUIDE
+                    SRN Data Pump Automation
+================================================================================
+
+Last Updated: 2026-07-02
+Total Scripts: 25+ PM2 workflows
+
+================================================================================
+                    QUICK START COMMANDS
+================================================================================
+
+# View all running PM2 processes
+npm run bots:status
+
+# Start all bots at once
+npm run bots:all
+
+# Stop all bots at once
+npm run bots:stop-all
+
+================================================================================
+                    GENERAL PM2 COMMANDS
+================================================================================
+
+# View PM2 status
+pm2 status
+pm2 list
+
+# View all logs
+pm2 logs
+
+# Clear all logs
+pm2 flush
+
+# Restart all processes
+pm2 restart all
+
+# Stop all processes
+pm2 stop all
+
+# Delete all processes
+pm2 delete all
+
+# Monitor processes in real-time
+pm2 monit
+
+================================================================================
+                    INDIVIDUAL SCRIPT COMMANDS
+================================================================================
+
+Each script has 4 commands:
+  :one     - Run once (foreground, exits after completion)
+  :forever - Start with PM2 (background, auto-restart on crash)
+  :logs    - View PM2 logs for this script
+  :stop    - Stop PM2 process for this script
+
+--------------------------------------------------------------------------------
+1. E2E (End-to-End)
+--------------------------------------------------------------------------------
+
+npm run e2e:one
+npm run e2e:forever
+npm run e2e:logs
+npm run e2e:stop
+
+--------------------------------------------------------------------------------
+2. Login
+--------------------------------------------------------------------------------
+
+npm run login:one
+npm run login:forever
+npm run login:logs
+npm run login:stop
+
+npm run login2:one
+npm run login2:forever
+npm run login2:logs
+npm run login2:stop
+
+--------------------------------------------------------------------------------
+3. Stamping
+--------------------------------------------------------------------------------
+
+npm run stamping:one
+npm run stamping:forever
+npm run stamping:logs
+npm run stamping:stop
+
+npm run stamping-peranan-ejen-duti-setem:one
+npm run stamping-peranan-ejen-duti-setem:forever
+npm run stamping-peranan-ejen-duti-setem:logs
+npm run stamping-peranan-ejen-duti-setem:stop
+
+npm run stamping-peranan-ejen-firma-guaman:one
+npm run stamping-peranan-ejen-firma-guaman:forever
+npm run stamping-peranan-ejen-firma-guaman:logs
+npm run stamping-peranan-ejen-firma-guaman:stop
+
+--------------------------------------------------------------------------------
+4. E2E Variants
+--------------------------------------------------------------------------------
+
+npm run e2e-ejen-duti-setem:one
+npm run e2e-ejen-duti-setem:forever
+npm run e2e-ejen-duti-setem:logs
+npm run e2e-ejen-duti-setem:stop
+
+npm run e2e-dev:one
+npm run e2e-dev:forever
+npm run e2e-dev:logs
+npm run e2e-dev:stop
+
+--------------------------------------------------------------------------------
+5. Penalty Workflows
+--------------------------------------------------------------------------------
+
+npm run e2e-penalty:one
+npm run e2e-penalty:forever
+npm run e2e-penalty:logs
+npm run e2e-penalty:stop
+
+npm run e2e-combine-penalti-without-penalty:one
+npm run e2e-combine-penalti-without-penalty:forever
+npm run e2e-combine-penalti-without-penalty:logs
+npm run e2e-combine-penalti-without-penalty:stop
+
+# Worker 2 (runs in Edge headless, separate output)
+npm run e2e-combine-penalti-without-penalty-worker2:one
+npm run e2e-combine-penalti-without-penalty-worker2:forever
+npm run e2e-combine-penalti-without-penalty-worker2:logs
+npm run e2e-combine-penalti-without-penalty-worker2:stop
+
+# Multi-worker coordination
+npm run e2e-combine-penalti-without-penalty:staggered     # Start both with 60s delay
+npm run e2e-combine-penalti-without-penalty:stop-both     # Stop both workers
+
+--------------------------------------------------------------------------------
+6. SRN Pump - Latest
+--------------------------------------------------------------------------------
+
+npm run srn-pump-latest:one
+npm run srn-pump-latest:forever
+npm run srn-pump-latest:logs
+npm run srn-pump-latest:stop
+
+npm run srn-pump-peranan:one
+npm run srn-pump-peranan:forever
+npm run srn-pump-peranan:logs
+npm run srn-pump-peranan:stop
+
+--------------------------------------------------------------------------------
+7. SRN Pump - Dikecualikan (Exempted)
+--------------------------------------------------------------------------------
+
+npm run srn-pump-latest-dikecualiakn:one
+npm run srn-pump-latest-dikecualiakn:forever
+npm run srn-pump-latest-dikecualiakn:logs
+npm run srn-pump-latest-dikecualiakn:stop
+
+# Worker 2
+npm run srn-pump-latest-dikecualiakn-worker2:one
+npm run srn-pump-latest-dikecualiakn-worker2:forever
+npm run srn-pump-latest-dikecualiakn-worker2:logs
+npm run srn-pump-latest-dikecualiakn-worker2:stop
+
+# Worker 3
+npm run srn-pump-latest-dikecualiakn-worker3:one
+npm run srn-pump-latest-dikecualiakn-worker3:forever
+npm run srn-pump-latest-dikecualiakn-worker3:logs
+npm run srn-pump-latest-dikecualiakn-worker3:stop
+
+# Multi-worker coordination
+npm run srn-pump-latest-dikecualiakn:staggered            # Start worker1 & worker2 with 60s delay
+npm run srn-pump-latest-dikecualiakn:stop-both            # Stop worker1 & worker2
+npm run srn-pump-latest-dikecualiakn:stop-all             # Stop all 3 workers
+
+--------------------------------------------------------------------------------
+8. SRN Pump - Dikecualikan Variants
+--------------------------------------------------------------------------------
+
+npm run srn-pump-latest-dikecualiakn-optimized:one
+npm run srn-pump-latest-dikecualiakn-optimized:forever
+npm run srn-pump-latest-dikecualiakn-optimized:logs
+npm run srn-pump-latest-dikecualiakn-optimized:stop
+
+npm run srn-pump-latest-dikecualiakn-dev-new:one
+npm run srn-pump-latest-dikecualiakn-dev-new:forever
+npm run srn-pump-latest-dikecualiakn-dev-new:logs
+npm run srn-pump-latest-dikecualiakn-dev-new:stop
+
+--------------------------------------------------------------------------------
+9. SRN Pump - Missing Phone
+--------------------------------------------------------------------------------
+
+npm run srn-pump-latest-dikecualiakn-missing-phone:one
+npm run srn-pump-latest-dikecualiakn-missing-phone:forever
+npm run srn-pump-latest-dikecualiakn-missing-phone:logs
+npm run srn-pump-latest-dikecualiakn-missing-phone:stop
+
+# Worker 2
+npm run srn-pump-latest-dikecualiakn-missing-phone-worker2:one
+npm run srn-pump-latest-dikecualiakn-missing-phone-worker2:forever
+npm run srn-pump-latest-dikecualiakn-missing-phone-worker2:logs
+npm run srn-pump-latest-dikecualiakn-missing-phone-worker2:stop
+
+# Multi-worker coordination
+npm run srn-pump-latest-dikecualiakn-missing-phone:staggered   # Start both with 60s delay
+npm run srn-pump-latest-dikecualiakn-missing-phone:stop-both   # Stop both workers
+
+--------------------------------------------------------------------------------
+10. SRN Pump - Missing Phone Staff FEDS (NEW!)
+--------------------------------------------------------------------------------
+
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:one
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:forever
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:logs
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:stop
+
+--------------------------------------------------------------------------------
+11. SRN Pump - Penalty Only
+--------------------------------------------------------------------------------
+
+npm run srn-pump-penalty-only:one
+npm run srn-pump-penalty-only:forever
+npm run srn-pump-penalty-only:logs
+npm run srn-pump-penalty-only:stop
+
+--------------------------------------------------------------------------------
+12. SRN Pump - Normal
+--------------------------------------------------------------------------------
+
+npm run srn-pump-normal:one
+npm run srn-pump-normal:forever
+npm run srn-pump-normal:logs
+npm run srn-pump-normal:stop
+
+--------------------------------------------------------------------------------
+13. SRN Pump - Normal Syarikat (Company)
+--------------------------------------------------------------------------------
+
+npm run srn-pump-normal-syarikat:one
+npm run srn-pump-normal-syarikat:forever
+npm run srn-pump-normal-syarikat:logs
+npm run srn-pump-normal-syarikat:stop
+
+# Worker 2
+npm run srn-pump-normal-syarikat-worker2:one
+npm run srn-pump-normal-syarikat-worker2:forever
+npm run srn-pump-normal-syarikat-worker2:logs
+npm run srn-pump-normal-syarikat-worker2:stop
+
+# Multi-worker coordination
+npm run srn-pump-normal-syarikat:staggered                # Start both with 60s delay
+npm run srn-pump-normal-syarikat:stop-both                # Stop both workers
+
+--------------------------------------------------------------------------------
+14. SRN Dev
+--------------------------------------------------------------------------------
+
+npm run srn-dev:one
+npm run srn-dev:forever
+npm run srn-dev:logs
+npm run srn-dev:stop
+
+--------------------------------------------------------------------------------
+15. Backup (Legacy)
+--------------------------------------------------------------------------------
+
+npm run backup-yg-jadi:one
+npm run backup-yg-jadi:forever
+npm run backup-yg-jadi:logs
+npm run backup-yg-jadi:stop
+
+--------------------------------------------------------------------------------
+16. Generate PDF
+--------------------------------------------------------------------------------
+
+npm run generate-pdf:one
+npm run generate-pdf:forever
+npm run generate-pdf:logs
+npm run generate-pdf:stop
+
+================================================================================
+                    CRASH RECOVERY COMMANDS
+================================================================================
+
+All scripts now have automatic crash recovery! If a script crashes, PM2 will
+automatically restart it and it will continue from the last completed iteration.
+
+# Check current progress for any script
+cat test-data/progress-e2e.txt
+cat test-data/progress-SRN-PUMP-LATEST.txt
+cat test-data/progress-SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-STAFF-FEDS.txt
+
+# Reset progress (start from iteration 1)
+# Example for e2e:
+npm run e2e:stop
+del test-data\progress-e2e.txt
+npm run e2e:forever
+
+# Example for SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-STAFF-FEDS:
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:stop
+del test-data\progress-SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-STAFF-FEDS.txt
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:forever
+
+# Reset all progress files
+del test-data\progress-*.txt
+del test-data\srn-pump-*-progress.txt
+
+# View permanent log (all runs)
+cat test-data/srn-permanent-log.txt
+
+================================================================================
+                    MONITORING & DEBUGGING
+================================================================================
+
+# View specific script logs
+npm run <script-name>:logs
+
+# View all PM2 logs (all scripts)
+pm2 logs
+
+# View logs with timestamp
+pm2 logs --timestamp
+
+# Clear all logs
+pm2 flush
+
+# Monitor processes (real-time)
+pm2 monit
+
+# Show PM2 dashboard
+pm2 dashboard
+
+# Check memory/CPU usage
+pm2 status
+
+# Restart a specific script
+pm2 restart <script-name>-forever
+
+# Example:
+pm2 restart srn-pump-latest-dikecualiakn-missing-phone-staff-feds-forever
+
+================================================================================
+                    MULTI-WORKER PATTERNS
+================================================================================
+
+# Pattern: Staggered Start (60 second delay between workers)
+# Prevents resource conflicts when running multiple workers
+
+# E2E Penalty - Staggered
+npm run e2e-combine-penalti-without-penalty:staggered
+npm run e2e-combine-penalti-without-penalty:stop-both
+
+# SRN Dikecualikan - Staggered (3 workers available)
+npm run srn-pump-latest-dikecualiakn:staggered            # Worker1 + Worker2 only
+npm run srn-pump-latest-dikecualiakn:stop-both            # Stop Worker1 + Worker2
+npm run srn-pump-latest-dikecualiakn:stop-all             # Stop all 3 workers
+
+# SRN Missing Phone - Staggered
+npm run srn-pump-latest-dikecualiakn-missing-phone:staggered
+npm run srn-pump-latest-dikecualiakn-missing-phone:stop-both
+
+# SRN Normal Syarikat - Staggered
+npm run srn-pump-normal-syarikat:staggered
+npm run srn-pump-normal-syarikat:stop-both
+
+================================================================================
+                    COMMON WORKFLOWS
+================================================================================
+
+# Start a long-running job with crash recovery
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:forever
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:logs
+
+# Stop the job
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:stop
+
+# Run all bots
+npm run bots:all
+npm run bots:status
+
+# Stop everything
+npm run bots:stop-all
+
+# Check if script is recovering from crash
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:logs
+# Look for: "Resuming from iteration X (last completed: Y)"
+
+================================================================================
+                    TROUBLESHOOTING
+================================================================================
+
+# Process won't stop
+pm2 delete <process-name>-forever
+pm2 kill
+
+# Check if PM2 daemon is running
+pm2 ping
+
+# Restart PM2 daemon
+pm2 kill
+pm2 resurrect
+
+# Process keeps restarting
+npm run <script-name>:logs
+# Check for errors in the logs
+
+# Clear everything and start fresh
+npm run bots:stop-all
+pm2 flush
+npm run bots:all
+
+# Check progress file if script seems stuck
+cat test-data/progress-<script-name>.txt
+
+# Delete corrupted progress file
+del test-data\progress-<script-name>.txt
+
+================================================================================
+                    PLAYWRIGHT TEST COMMANDS
+================================================================================
+
+# Run all tests
+npm test
+
+# Run in headed mode (see browser)
+npm run test:headed
+
+# Run with Playwright UI
+npm run test:ui
+
+# View HTML report
+npm run report
+
+# Run a specific test directly
+npx playwright test tests/<test-name>.spec.ts
+
+# Example:
+npx playwright test tests/SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-STAFF-FEDS.spec.ts
+
+================================================================================
+                    DOCKER COMMANDS
+================================================================================
+
+# Run tests in Docker
+docker run -v ${PWD}/test-data:/app/test-data matalep00/ds7-automation:latest
+
+# With report output
+docker run -v ${PWD}/test-data:/app/test-data -v ${PWD}/playwright-report:/app/playwright-report matalep00/ds7-automation:latest
+
+# Run specific test via docker-compose
+docker-compose run playwright npx playwright test <spec>
+
+================================================================================
+                    PROGRESS FILE REFERENCE
+================================================================================
+
+Script Name                                              Progress File
+--------------------------------------------------------------------------------
+e2e                                                      test-data/progress-e2e.txt
+e2e-penalty                                              test-data/progress-e2e-penalty.txt
+e2e-combine-penalti-without-penalty                      test-data/progress-e2e-combine-penalti-without-penalty.txt
+e2e-combine-penalti-without-penalty-worker2              test-data/progress-e2e-combine-penalti-without-penalty-worker2.txt
+SRN-PUMP-LATEST                                          test-data/progress-SRN-PUMP-LATEST.txt
+SRN-PUMP-LATEST-DIKECUALIAKN                             test-data/progress-SRN-PUMP-LATEST-DIKECUALIAKN.txt
+SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE               test-data/srn-pump-missing-phone-progress.txt
+SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-STAFF-FEDS    test-data/srn-pump-missing-phone-staff-feds-progress.txt
+SRN-PUMP-LATEST-DIKECUALIAKN-PENALTY-ONLY                test-data/progress-SRN-PUMP-LATEST-DIKECUALIAKN-PENALTY-ONLY.txt
+SRN-PUMP-LATEST-DIKECUALIAKN-OPTIMIZED                   test-data/progress-SRN-PUMP-LATEST-DIKECUALIAKN-OPTIMIZED.txt
+SRN-PUMP-NORMAL                                          test-data/progress-SRN-PUMP-NORMAL.txt
+SRN-PUMP-NORMAL-SYARIKAT                                 test-data/srn-pump-normal-syarikat-progress.txt
+... and more
+
+================================================================================
+                    NOTES
+================================================================================
+
+1. ALL scripts with loops now have automatic crash recovery
+2. PM2 auto-restarts scripts after crash (10 second delay)
+3. Scripts automatically resume from last completed iteration
+4. Progress files are saved in test-data/ directory
+5. Progress files are git-ignored
+6. Multi-worker scripts use separate output directories:
+   - worker1: test-results/
+   - worker2: test-results-worker2/ (or variant-specific directories)
+   - worker3: test-results-worker3-dikecualiakn/
+
+7. Staggered start uses 60 second delay to prevent resource conflicts
+
+================================================================================
+                    DOCUMENTATION
+================================================================================
+
+For more details, see:
+- CRASH-RECOVERY-GUIDE.md        (Technical guide)
+- CRASH-RECOVERY-QUICK-REF.md    (Quick reference)
+- IMPLEMENTATION-COMPLETE.md     (Implementation summary)
+- CLAUDE.md                      (Project setup and architecture)
+
+================================================================================
+End of PM2 Command Guide
+Generated: 2026-07-02
+================================================================================
