@@ -1,11 +1,14 @@
 import { test } from "@playwright/test";
 import * as fs from "fs";
 
-// Date used for 20% penalty (January — oldest, highest penalty)
-const PENALTY_DATE_20 = "01/01/2026";
-
-// Date used for 10% penalty (May — more recent, lower penalty)
-const PENALTY_DATE_10 = "01/05/2026";
+// Format today's date as dd/MM/yyyy
+function getCurrentDate(): string {
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
 
 test("test", async ({ page }) => {
   test.setTimeout(4 * 60 * 60 * 1000); // 4 hours
@@ -21,10 +24,16 @@ test("test", async ({ page }) => {
   );
   const addresses = addressesData.INDIVIDU;
 
+  // Load SSM companies data
+  const companiesData = JSON.parse(
+    fs.readFileSync("./test-data/ssm-companies.json", "utf-8"),
+  );
+  const companies = companiesData.companies;
+
   //EDS SIDE
   await page.goto("https://mytax-dev.hasil.gov.my/web/");
   await page.waitForTimeout(3000);
-  await page.reload();
+  await page.reload({ waitUntil: "load" });
   await page.waitForTimeout(6000);
   await page
     .getByRole("combobox")
@@ -42,7 +51,7 @@ test("test", async ({ page }) => {
     .waitFor({ state: "visible", timeout: 20000 });
   await page
     .getByRole("textbox", { name: "No. Pengenalan" })
-    .fill("951004146116");
+    .fill("900220035533");
   await page.waitForTimeout(2000);
   await page
     .getByRole("button", { name: "Hantar" })
@@ -107,87 +116,51 @@ test("test", async ({ page }) => {
   // Clear the URL log file before starting
   fs.writeFileSync(
     "./test-data/current-url-worker1.txt",
-    "Stamping Submission URLs (PENALTY ONLY)\n========================================\n\n",
+    "Stamping Submission URLs\n========================\n\n",
   );
 
   // Write a run separator to the permanent log
   const runTimestamp = new Date().toISOString();
   fs.appendFileSync(
     "./test-data/srn-permanent-log.txt",
-    `\n=== Run started: ${runTimestamp} (PENALTY ONLY) ===\n`,
+    `\n=== Run started: ${runTimestamp} ===\n`,
   );
 
-  // Loop 40 times starting from the stamping upload
-  // If a penalty amount is needed, pick one fixed amount per run and reuse it for all penalty SRNs
-  // Allow overriding the fixed penalty amount via the PENALTY_AMOUNT environment variable.
-  const configuredPenaltyEnv = process.env.PENALTY_AMOUNT;
-  let fixedPenaltyAmount: number | null = null;
-  if (configuredPenaltyEnv) {
-    const parsed = Number(
-      String(configuredPenaltyEnv).replace(/[^0-9.-]/g, ""),
-    );
-    if (!Number.isNaN(parsed) && parsed > 0) {
-      fixedPenaltyAmount = parsed;
-      console.log(
-        `Using configured penalty amount from env: ${fixedPenaltyAmount}`,
-      );
-      fs.appendFileSync(
-        "./test-data/srn-permanent-log.txt",
-        `[${new Date().toISOString()}] Configured fixed penalty amount: ${fixedPenaltyAmount}\n`,
-      );
-    } else {
-      console.log(
-        `Invalid PENALTY_AMOUNT env value: ${configuredPenaltyEnv}, ignoring.`,
-      );
-    
-    // Save progress after successful iteration
-    fs.writeFileSync(progressFile, i.toString());
-    console.log(`Progress saved: iteration ${i} completed`);
-  }
-  }
-  // If no configured value provided, use the project default fixed penalty amount
-  if (fixedPenaltyAmount === null) {
-    fixedPenaltyAmount = 427183954;
-    console.log(`Default fixed penalty amount set: ${fixedPenaltyAmount}`);
-    fs.appendFileSync(
-      "./test-data/srn-permanent-log.txt",
-      `[${new Date().toISOString()}] Default fixed penalty amount set: ${fixedPenaltyAmount}\n`,
-    );
-  }
+  // Progress tracking file
+  const progressFile = "./test-data/srn-pump-normal-syarikat-progress.txt";
 
-  
-  // Progress tracking: Read last completed iteration
-  const progressFile = "./test-data/progress-SRN-PUMP-LATEST-DIKECUALIAKN-PENALTY-ONLY.txt";
+  // Read last completed iteration, default to 0 if file doesn't exist
   let startIteration = 1;
-
   if (fs.existsSync(progressFile)) {
-    try {
-      const lastCompleted = parseInt(fs.readFileSync(progressFile, "utf-8").trim(), 10);
-      if (!isNaN(lastCompleted) && lastCompleted > 0) {
-        startIteration = lastCompleted + 1;
-        console.log(`Resuming from iteration ${startIteration} (last completed: ${lastCompleted})`);
-        fs.appendFileSync(
-          "./test-data/srn-permanent-log.txt",
-          `[${new Date().toISOString()}] Resuming from iteration ${startIteration}\n`,
-        );
-      }
-    } catch (err) {
-      console.log("Could not read progress file, starting from iteration 1");
-    }
+    const lastCompleted = parseInt(
+      fs.readFileSync(progressFile, "utf-8").trim(),
+      10,
+    );
+    startIteration = lastCompleted + 1;
+    console.log(
+      `Resuming from iteration ${startIteration} (last completed: ${lastCompleted})`,
+    );
+  } else {
+    console.log("Starting fresh from iteration 1");
   }
 
-  for (let i = startIteration; i <= 400; i++) {
-    // Alternate between 10% penalty (1 May) and 20% penalty (1 Jan)
-    const isOdd = i % 2 === 1;
-    const penaltyDate = isOdd ? PENALTY_DATE_10 : PENALTY_DATE_20;
-    const penaltyPercent = isOdd ? "10%" : "20%";
+  // If we've completed all 100, reset to 1
+  if (startIteration > 100) {
+    startIteration = 1;
+    console.log("All iterations completed, starting new cycle from 1");
+  }
 
+  // Loop for normal submissions only (no penalty, no duti dikecualikan)
+  for (let i = startIteration; i <= 100; i++) {
+    const dateToUse = getCurrentDate();
+    // Use modulo to cycle through companies array (0-33 repeats for 100 iterations)
+    const companyIndex = (i - 1) % companies.length;
+    const currentCompany = companies[companyIndex];
     console.log(
-      `--- Loop iteration ${i} of 400 --- [PENALTI ${penaltyPercent}] date=${penaltyDate}`,
+      `--- Loop iteration ${i} of 100 --- [NORMAL] date=${dateToUse} --- Company: ${currentCompany.name}`,
     );
 
     await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
-    //await page.locator('a[href="/stamping/upload"]').click();
     await page.waitForTimeout(5000);
     await page
       .getByRole("button", { name: "Faham" })
@@ -214,9 +187,7 @@ test("test", async ({ page }) => {
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByText("Tempat Surat Cara Ditandatangan*").click();
     await page.locator("#DocTitleStep0").click();
-    await page
-      .locator("#DocTitleStep0")
-      .fill(`PBB TESTING ${i}`);
+    await page.locator("#DocTitleStep0").fill(`Bank Testing ${i}`);
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
@@ -225,7 +196,7 @@ test("test", async ({ page }) => {
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
-      .fill(penaltyDate);
+      .fill(dateToUse);
     await page
       .getByRole("textbox", { name: "dd/MM/yyyy" })
       .first()
@@ -244,100 +215,90 @@ test("test", async ({ page }) => {
     await page
       .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
       .waitFor({ state: "visible", timeout: 20000 });
+    ////
     await page
-      .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
+      .getByLabel("A. PIHAK PERTAMA")
+      .getByText("Syarikat / Perniagaan Milikan")
+      .click();
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].CompanyName"]')
+      .click();
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].CompanyName"]')
+      .fill(currentCompany.name);
+    await page.locator("#KategoriPembayarDuti").selectOption("4");
+    await page
+      .locator(
+        'input[name="StampingForm.FormACompanyList[0].NewCompanyRegistrationNo"]',
+      )
+      .click();
+    await page
+      .locator(
+        'input[name="StampingForm.FormACompanyList[0].NewCompanyRegistrationNo"]',
+      )
+      .fill(currentCompany.registrationNo);
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
+      .click();
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
+      .fill("0199188888");
+    await page.locator("#fld-email-com-0Step1").click();
+    await page.locator("#fld-email-com-0Step1").fill("test@gmail.com");
+    await page
+      .locator(
+        'input[name="StampingForm.FormACompanyList[0].CompStatus"][value="1"]',
+      )
       .check();
-    /*  await page
-      .getByLabel("A. PIHAK PERTAMA")
-      .locator("div")
-      .filter({ hasText: /^Bandar$/ })
-      .click();
     await page
-      .getByLabel("A. PIHAK PERTAMA")
-      .locator("div")
-      .filter({ hasText: /^Negeri$/ })
-      .click(); */
-    await page.waitForTimeout(3000);
-    await page.getByRole("button", { name: "Seterusnya " }).click();
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR1"]')
+      .click();
+    await page.locator("#fld-email-com-0Step1").fill("test@gmail.com");
 
-    await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Name"]')
-      .waitFor({ state: "visible", timeout: 20000 });
-
-    await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Name"]')
-      .click();
-    await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Name"]')
-      .fill("Shamsul Yusuf Haslam");
-    await page.locator("#IsCitizen_0").selectOption("1");
-    await page.locator("#isRoles1_0").check();
-    await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].IcNo"]')
-      .click();
-    await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].IcNo"]')
-      .fill("590511025908");
-    await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].IcNo"]')
-      .press("Tab");
-    await page
-      .getByText("Nombor Pengenalan Cukai (TIN)* Nombor TIN berjaya diisi.")
-      .click();
-    await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].TelNo"]')
-      .click();
-    await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].TelNo"]')
-      .fill("0199184911");
-    await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].TelNo"]')
-      .press("Tab");
-    await page.locator("#fld-email-ind-0-Step2").click();
-    await page.locator("#fld-email-ind-0-Step2").fill("aaa@gmail.com");
-
-    // Pick a random address from addresses_my.json
     const randomAddr = addresses[Math.floor(Math.random() * addresses.length)];
 
     await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Addr1"]')
-      .click();
-    await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Addr1"]')
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR1"]')
       .fill(randomAddr.Addr1);
     await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Addr2"]')
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR2"]')
       .click();
     await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Addr2"]')
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR1"]')
+      .fill(randomAddr.Addr1);
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR2"]')
       .fill(randomAddr.Addr2);
     await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Addr3"]')
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR3"]')
       .click();
     await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Addr3"]')
+      .locator('input[name="StampingForm.FormACompanyList[0].ADDR3"]')
       .fill(randomAddr.Addr3);
     await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Postcode"]')
+      .locator('input[name="StampingForm.FormACompanyList[0].Postcode"]')
       .click();
     await page
-      .locator('input[name="StampingForm.FormBIndividualList[0].Postcode"]')
-      .fill("50000");
-    await page.waitForTimeout(4000);
+      .locator('input[name="StampingForm.FormACompanyList[0].Postcode"]')
+      .fill("60000");
 
+    ////
+    await page.waitForTimeout(4000);
+    await page.getByRole("button", { name: "Seterusnya " }).click();
+
+    await page.waitForTimeout(4000);
+    await page
+      .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
+      .waitFor({ state: "visible", timeout: 20000 });
+    await page
+      .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
+      .check();
+    await page.waitForTimeout(3000);
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
     await page
       .getByRole("radio", { name: "Ada", exact: true })
       .waitFor({ state: "visible", timeout: 10000 });
-
-    // Generate random numbers between 5-7 digits
-    const randomDigits = Math.floor(Math.random() * 3) + 4; // Random between 5-7
-    const minValue = Math.pow(4, randomDigits - 1);
-    const maxValue = Math.pow(4, randomDigits) - 1;
-    const randomNumber =
-      Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
-    const formattedNumber = randomNumber.toLocaleString("en-US");
 
     await page.getByRole("radio", { name: "Ada", exact: true }).check();
     await page.getByRole("radio", { name: "Tiada" }).check();
@@ -348,22 +309,14 @@ test("test", async ({ page }) => {
     await page.locator("#StampingForm_formC_2_ShrTrf").fill("30000000");
     await page.getByRole("radio", { name: "Ringgit Malaysia" }).check();
     await page.getByRole("textbox", { name: "0.00" }).click();
-    // Always use fixed penalty amount for all iterations
-    let amountToUse: number;
-    if (fixedPenaltyAmount === null) {
-      fixedPenaltyAmount =
-        Math.floor(Math.random() * (900000000 - 100000000 + 1)) + 100000000;
-      console.log(`Fixed penalty amount selected: ${fixedPenaltyAmount}`);
-      fs.appendFileSync(
-        "./test-data/srn-permanent-log.txt",
-        `[${new Date().toISOString()}] Fixed penalty amount selected: ${fixedPenaltyAmount}\n`,
-      );
-    }
-    amountToUse = fixedPenaltyAmount;
+
+    // Random amount for normal submissions
+    const randomAmount =
+      Math.floor(Math.random() * (900000000 - 100000000 + 1)) + 100000000;
 
     await page
       .getByRole("textbox", { name: "0.00" })
-      .fill(amountToUse.toLocaleString("en-US"));
+      .fill(randomAmount.toLocaleString("en-US"));
     await page.locator("#statusSelect").selectOption("1");
     // Wait for status change auto-prefill to settle
     await page.waitForTimeout(1500);
@@ -389,13 +342,15 @@ test("test", async ({ page }) => {
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByText("Maklumat Syarikat *").click();
     await page.locator("#StampingForm_formC_2_CompName").click();
+
+    // Pick a random company from SSM data
+    const randomCompany =
+      companies[Math.floor(Math.random() * companies.length)];
+
     await page
       .locator("#StampingForm_formC_2_CompName")
-      .fill("SYARIKAT ABAH SAYA");
+      .fill(randomCompany.name);
     await page.locator("#StampingForm_formC_2_CompRegOld").click();
-    await page
-      .locator("#StampingForm_formC_2_CompName")
-      .fill("SYARIKAT ABAH SAYA1");
     await page.locator("#StampingForm_formC_2_CompRegOld").fill("2331");
     await page.getByText("Nombor Pendaftaran Syarikat *").click();
     await page.locator("#StampingForm_formC_2_CompRegOld").click();
@@ -418,9 +373,14 @@ test("test", async ({ page }) => {
       .locator("h5.mb-3.fw-bold", { hasText: "Peremitan / Pengecualian" })
       .waitFor({ state: "visible", timeout: 10000 });
 
-    /*  await page.getByRole("radio", { name: "Ada", exact: true }).check();
-    await page.getByRole("radio", { name: "Tiada" }).check(); */
     await page.getByRole("button", { name: "Seterusnya " }).click();
+
+    // Wait for upload section to be visible
+    await page
+      .locator(
+        'button.upload-btn[data-bs-model="StampingForm.SupportingDocFiles"]',
+      )
+      .waitFor({ state: "visible", timeout: 20000 });
 
     // Upload document - intercept file chooser to handle native dialog
     await page
@@ -452,18 +412,23 @@ test("test", async ({ page }) => {
 
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
+    // Wait for declaration section to be visible
+    await page
+      .locator("label")
+      .filter({ hasText: "Saya seperti nama dan Nombor" })
+      .waitFor({ state: "visible", timeout: 20000 });
+
     await page
       .locator("label")
       .filter({ hasText: "Saya seperti nama dan Nombor" })
       .click();
     await page
-      .getByRole("radio", { name: "Pihak Pertama", exact: true })
+      .getByRole("radio", { name: "Wakil Pihak Pertama", exact: true })
       .check();
     await page.getByRole("button", { name: "Hantar " }).click();
     await page.getByRole("button", { name: "Batal" }).click();
     await page.getByRole("button", { name: "Hantar " }).click();
     await page.getByRole("button", { name: "Ya, Hantar" }).click();
-    // await page.getByRole("button", { name: "OK" }).click();
 
     await page
       .getByRole("button", { name: "Kembali ke Paparan Utama" })
@@ -472,22 +437,25 @@ test("test", async ({ page }) => {
     await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
     await page.getByRole("heading", { name: "Senarai Permohonan" }).click();
 
-    // Extract and log the SRN - ALL are PENALTY cases
+    // Extract and log the SRN
     await page.waitForTimeout(2000);
     const srnElement = await page
       .locator("p.modern-clickable-stamp[data-search]")
       .first();
     const srn = await srnElement.textContent();
     const srnValue = srn?.trim() || "";
-
-    console.log(`SRN (PENALTY ${penaltyPercent}): ${srnValue}`);
+    console.log(`SRN: ${srnValue}`);
     fs.appendFileSync(
       "./test-data/current-url-worker1.txt",
-      `SRN: ${srnValue} (${penaltyPercent})\n`,
+      `SRN: ${srnValue}\n`,
     );
     fs.appendFileSync(
       "./test-data/srn-permanent-log.txt",
-      `[${new Date().toISOString()}] Loop ${i} | SRN: ${srnValue} | PENALTI ${penaltyPercent}\n`,
+      `[${new Date().toISOString()}] Loop ${i} | SRN: ${srnValue} | NORMAL\n`,
     );
+
+    // Save progress after successful completion
+    fs.writeFileSync(progressFile, i.toString());
+    console.log(`Progress saved: iteration ${i} completed`);
   }
 });

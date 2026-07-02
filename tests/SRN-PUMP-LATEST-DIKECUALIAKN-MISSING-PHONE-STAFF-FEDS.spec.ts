@@ -62,7 +62,7 @@ test("test", async ({ page }) => {
     .waitFor({ state: "visible", timeout: 20000 });
   await page
     .getByRole("textbox", { name: "No. Pengenalan" })
-    .fill("951004146116");
+    .fill("721101086035");
   await page.waitForTimeout(2000);
   await page
     .getByRole("button", { name: "Hantar" })
@@ -76,7 +76,7 @@ test("test", async ({ page }) => {
     .click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
-    .fill("Password123");
+    .fill("Passw0rd");
   await page
     .getByText("Percubaan Log Masuk Anda : 0 /")
     .waitFor({ state: "visible", timeout: 20000 });
@@ -101,29 +101,16 @@ test("test", async ({ page }) => {
   await page.getByRole("button", { name: "Ok" }).click();
   await page.waitForTimeout(5000);
 
-  await page
-    .getByText("Perkhidmatan ezHasil")
-    .waitFor({ state: "visible", timeout: 20000 });
-  await page.getByText("Perkhidmatan ezHasil").click();
-  await page
-
-    .getByText("Duti Setem 2.0 (UAT) e-Duti")
-    .waitFor({ state: "visible", timeout: 20000 });
-
-  await page.getByText("Duti Setem 2.0 (UAT) e-Duti").click();
-
-  // Wait for new tab to open when clicking e-Duti Setem
-  const [newPage] = await Promise.all([
-    page.context().waitForEvent("page"),
-    page.getByRole("link", { name: "e-Duti Setem" }).click(),
-  ]);
-
-  // Switch to the new tab
-  await newPage.waitForLoadState();
-  page = newPage;
-
-  await page.waitForTimeout(7000);
-
+  //CHANGE PERANAN
+  await page.getByText("Individu", { exact: true }).click();
+  await page.getByText("Firma Pengurusan").click();
+  await page.getByText("Firma Ejen Duti Setem").click();
+  const page1Promise = page.waitForEvent("popup");
+  await page.getByText("GERBANG SARI ENGINEERING SDN BHD").click();
+  const page1 = await page1Promise;
+  await page1.waitForLoadState();
+  await page.bringToFront();
+  await page1.close();
   // Clear the URL log file before starting
   fs.writeFileSync(
     "./test-data/current-url-worker1.txt",
@@ -171,9 +158,8 @@ test("test", async ({ page }) => {
     );
   }
 
-  
   // Progress tracking: Read last completed iteration
-  const progressFile = "./test-data/progress-SRN-PUMP-LATEST-DIKECUALIAKN.txt";
+  const progressFile = "./test-data/srn-pump-missing-phone-staff-feds-progress.txt";
   let startIteration = 1;
 
   if (fs.existsSync(progressFile)) {
@@ -306,6 +292,19 @@ test("test", async ({ page }) => {
       .locator("div")
       .filter({ hasText: /^Negeri$/ })
       .click(); */
+
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
+      .click();
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
+      .press("ControlOrMeta+a");
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
+      .fill("0199999999");
+    await page.locator("#fld-email-com-0Step1").click();
+    await page.locator("#fld-email-com-0Step1").press("ControlOrMeta+a");
+    await page.locator("#fld-email-com-0Step1").fill("test@gmail.com");
     await page.waitForTimeout(3000);
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
@@ -511,7 +510,7 @@ test("test", async ({ page }) => {
       .filter({ hasText: "Saya seperti nama dan Nombor" })
       .click();
     await page
-      .getByRole("radio", { name: "Pihak Pertama", exact: true })
+      .getByRole("radio", { name: "Wakil Pihak Pertama", exact: true })
       .check();
     await page.getByRole("button", { name: "Hantar " }).click();
     await page.getByRole("button", { name: "Batal" }).click();
@@ -705,7 +704,7 @@ test("test", async ({ page }) => {
       await page.getByRole("button", { name: "Ya" }).click();
       await page.waitForTimeout(2000);
     }
-    /* await page
+    /*  await page
       .getByText("Tindakan - Taksiran Duti")
       .nth(1)
       .waitFor({ state: "visible", timeout: 20000 });
@@ -870,7 +869,7 @@ test("test", async ({ page }) => {
     await page.goto(
       "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
-  
+
     // Save progress after successful iteration
     fs.writeFileSync(progressFile, i.toString());
     console.log(`Progress saved: iteration ${i} completed`);
