@@ -1,5 +1,12 @@
-import { test } from "@playwright/test";
+import { test, chromium, firefox, webkit } from "@playwright/test";
 import * as fs from "fs";
+
+// Override to use Chrome browser
+test.use({
+  browserName: "chromium",
+  channel: "chrome",
+  headless: true,
+});
 
 const namaList = ["Form of Transfer of Securites"];
 

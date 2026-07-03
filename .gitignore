@@ -11,3 +11,6 @@ test-results-worker3-dikecualiakn/
 # Progress tracking files (crash recovery)
 test-data/progress-*.txt
 test-data/*-progress.txt
+
+# Browser profiles (separate instances)
+test-data/browser-profiles/

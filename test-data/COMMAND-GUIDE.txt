@@ -367,6 +367,38 @@ npm run srn-pump-normal-syarikat:staggered
 npm run srn-pump-normal-syarikat:stop-both
 
 ================================================================================
+                    RUN MULTIPLE SCRIPTS AT ONCE
+================================================================================
+
+# Run 3 SRN Pump Scripts Simultaneously (NEW!)
+# Runs all three scripts in parallel with PM2
+
+npm run srn-pump-triple:start-all
+# Starts:
+# 1. SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-STAFF-FEDS
+# 2. SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE
+# 3. SRN-PUMP-LATEST-DIKECUALIAKN
+
+npm run srn-pump-triple:logs-all
+# View logs for all three scripts at once
+
+npm run srn-pump-triple:stop-all
+# Stop all three scripts at once
+
+# Check status of all running scripts
+npm run bots:status
+
+# Each script has independent:
+# - Progress tracking (separate files)
+# - Crash recovery (auto-resume)
+# - Iteration counts
+
+# Progress files:
+# - test-data/srn-pump-missing-phone-staff-feds-progress.txt
+# - test-data/srn-pump-missing-phone-progress.txt
+# - test-data/progress-SRN-PUMP-LATEST-DIKECUALIAKN.txt
+
+================================================================================
                     COMMON WORKFLOWS
 ================================================================================
 
