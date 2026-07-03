@@ -1,12 +1,12 @@
-import { test } from "@playwright/test";
+import { test, chromium, firefox, webkit } from "@playwright/test";
 import * as fs from "fs";
 
-const usersDevData = JSON.parse(
-  fs.readFileSync("./test-data/users_dev.json", "utf-8"),
-);
-const defaultHitsUser =
-  usersDevData.find((row: any) => row.nama?.toUpperCase() === "USER STDS 1") ??
-  usersDevData[0];
+// Override to use Chrome browser
+test.use({
+  browserName: "chromium",
+  channel: "chrome",
+  headless: true,
+});
 
 const namaList = ["Form of Transfer of Securites"];
 
@@ -20,8 +20,10 @@ const FLOW_PATTERN: FlowType[] = [
   "NO_PENALTY",
 ];
 
-// Date used for "tarikh penalti" (January — old enough to trigger penalty)
-const PENALTY_DATE = "01/01/2026";
+// Penalty scenarios alternate between two dates each time "PENALTY" fires:
+// 1 January -> Penalti 20%, 1 May -> Penalti 10%
+const PENALTY_DATE_JAN = "01/01/2026";
+const PENALTY_DATE_MAY = "01/05/2026";
 
 // Format today's date as dd/MM/yyyy for "tarikh biasa"
 function getCurrentDate(): string {
@@ -48,6 +50,9 @@ test("test", async ({ page }) => {
 
   //EDS SIDE
   await page.goto("https://mytax-dev.hasil.gov.my/web/");
+  await page.waitForTimeout(3000);
+  await page.reload();
+  await page.waitForTimeout(6000);
   await page
     .getByRole("combobox")
     .waitFor({ state: "visible", timeout: 20000 });
@@ -64,8 +69,11 @@ test("test", async ({ page }) => {
     .waitFor({ state: "visible", timeout: 20000 });
   await page
     .getByRole("textbox", { name: "No. Pengenalan" })
-    .fill("951004146116");
+    .fill("721101086035");
   await page.waitForTimeout(2000);
+  await page
+    .getByRole("button", { name: "Hantar" })
+    .waitFor({ state: "visible", timeout: 20000 });
   await page.getByRole("button", { name: "Hantar" }).click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
@@ -75,7 +83,7 @@ test("test", async ({ page }) => {
     .click();
   await page
     .getByRole("textbox", { name: "Sila Masukkan Kata Laluan" })
-    .fill("Password123");
+    .fill("Passw0rd");
   await page
     .getByText("Percubaan Log Masuk Anda : 0 /")
     .waitFor({ state: "visible", timeout: 20000 });
@@ -100,29 +108,16 @@ test("test", async ({ page }) => {
   await page.getByRole("button", { name: "Ok" }).click();
   await page.waitForTimeout(5000);
 
-  await page
-    .getByText("Perkhidmatan ezHasil")
-    .waitFor({ state: "visible", timeout: 20000 });
-  await page.getByText("Perkhidmatan ezHasil").click();
-  await page
-    .getByText("Duti Setem (DEV)")
-    //.getByText("Duti Setem 2.0 (UAT) e-Duti")
-    .waitFor({ state: "visible", timeout: 20000 });
-  await page.getByText("Duti Setem (DEV)").click();
-  //await page.getByText("Duti Setem 2.0 (UAT) e-Duti").click();
-
-  // Wait for new tab to open when clicking e-Duti Setem
-  const [newPage] = await Promise.all([
-    page.context().waitForEvent("page"),
-    page.getByRole("link", { name: "e-Duti Setem" }).click(),
-  ]);
-
-  // Switch to the new tab
-  await newPage.waitForLoadState();
-  page = newPage;
-
-  await page.waitForTimeout(7000);
-
+  //CHANGE PERANAN
+  await page.getByText("Individu", { exact: true }).click();
+  await page.getByText("Firma Pengurusan").click();
+  await page.getByText("Firma Ejen Duti Setem").click();
+  const page1Promise = page.waitForEvent("popup");
+  await page.getByText("GERBANG SARI ENGINEERING SDN BHD").click();
+  const page1 = await page1Promise;
+  await page1.waitForLoadState();
+  await page.bringToFront();
+  await page1.close();
   // Clear the URL log file before starting
   fs.writeFileSync(
     "./test-data/current-url-worker1.txt",
@@ -136,8 +131,42 @@ test("test", async ({ page }) => {
     `\n=== Run started: ${runTimestamp} ===\n`,
   );
 
+  // Loop 40 times starting from the stamping upload
+  // If a penalty amount is needed, pick one fixed amount per run and reuse it for all penalty SRNs
+  // Allow overriding the fixed penalty amount via the PENALTY_AMOUNT environment variable.
+  const configuredPenaltyEnv = process.env.PENALTY_AMOUNT;
+  let fixedPenaltyAmount: number | null = null;
+  if (configuredPenaltyEnv) {
+    const parsed = Number(
+      String(configuredPenaltyEnv).replace(/[^0-9.-]/g, ""),
+    );
+    if (!Number.isNaN(parsed) && parsed > 0) {
+      fixedPenaltyAmount = parsed;
+      console.log(
+        `Using configured penalty amount from env: ${fixedPenaltyAmount}`,
+      );
+      fs.appendFileSync(
+        "./test-data/srn-permanent-log.txt",
+        `[${new Date().toISOString()}] Configured fixed penalty amount: ${fixedPenaltyAmount}\n`,
+      );
+    } else {
+      console.log(
+        `Invalid PENALTY_AMOUNT env value: ${configuredPenaltyEnv}, ignoring.`,
+      );
+    }
+  }
+  // If no configured value provided, use the project default fixed penalty amount
+  if (fixedPenaltyAmount === null) {
+    fixedPenaltyAmount = 427183954;
+    console.log(`Default fixed penalty amount set: ${fixedPenaltyAmount}`);
+    fs.appendFileSync(
+      "./test-data/srn-permanent-log.txt",
+      `[${new Date().toISOString()}] Default fixed penalty amount set: ${fixedPenaltyAmount}\n`,
+    );
+  }
+
   // Progress tracking: Read last completed iteration
-  const progressFile = "./test-data/progress-SRN-PUMP-LATEST-DIKECUALIAKN-DEV.txt";
+  const progressFile = "./test-data/srn-pump-missing-phone-staff-feds-progress.txt";
   let startIteration = 1;
 
   if (fs.existsSync(progressFile)) {
@@ -156,22 +185,40 @@ test("test", async ({ page }) => {
     }
   }
 
-  // Loop 40 times starting from the stamping upload
-  // If a penalty amount is needed, pick one fixed amount per run and reuse it for all penalty SRNs
-  let fixedPenaltyAmount: number | null = null;
+  // Calculate penalty occurrence count for resumed runs
+  let penaltyOccurrenceCount = 0;
+  for (let j = 1; j < startIteration; j++) {
+    const flowType = FLOW_PATTERN[(j - 1) % FLOW_PATTERN.length];
+    if (flowType === "PENALTY") {
+      penaltyOccurrenceCount++;
+    }
+  }
 
-  for (let i = startIteration; i <= 40; i++) {
+  for (let i = startIteration; i <= 400; i++) {
     const flowType = FLOW_PATTERN[(i - 1) % FLOW_PATTERN.length];
     const isPenalty = flowType === "PENALTY";
     const isDutiDikecualikan = flowType === "DUTI_DIKECUALIKAN";
-    const dateToUse = isPenalty ? PENALTY_DATE : getCurrentDate();
+    let isPenaltyJan = false;
+    if (isPenalty) {
+      isPenaltyJan = penaltyOccurrenceCount % 2 === 0;
+      penaltyOccurrenceCount++;
+    }
+    const dateToUse = isPenalty
+      ? isPenaltyJan
+        ? PENALTY_DATE_JAN
+        : PENALTY_DATE_MAY
+      : getCurrentDate();
     const docTitlePrefix = isPenalty
-      ? "Penalty "
+      ? isPenaltyJan
+        ? "Penalti 20% "
+        : "Penalti 10% "
       : isDutiDikecualikan
         ? "Duti Dikecualikan "
         : "";
     const flowLabel = isPenalty
-      ? "PENALTI"
+      ? isPenaltyJan
+        ? "PENALTI 20% (JAN)"
+        : "PENALTI 10% (MAY)"
       : isDutiDikecualikan
         ? "DUTI DIKECUALIKAN"
         : "NO PENALTY";
@@ -179,8 +226,7 @@ test("test", async ({ page }) => {
       `--- Loop iteration ${i} of XX --- [${flowLabel}] date=${dateToUse}`,
     );
 
-    await page.goto("https://eds-dev.hasil.gov.my/stamping/upload");
-    // await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
+    await page.goto("https://eds-uat.hasil.gov.my/stamping/upload");
     //await page.locator('a[href="/stamping/upload"]').click();
     await page.waitForTimeout(5000);
     await page
@@ -243,7 +289,7 @@ test("test", async ({ page }) => {
     await page
       .getByRole("checkbox", { name: "Saya / Syarikat sebagai" })
       .check();
-    await page
+    /*  await page
       .getByLabel("A. PIHAK PERTAMA")
       .locator("div")
       .filter({ hasText: /^Bandar$/ })
@@ -252,7 +298,21 @@ test("test", async ({ page }) => {
       .getByLabel("A. PIHAK PERTAMA")
       .locator("div")
       .filter({ hasText: /^Negeri$/ })
+      .click(); */
+
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
       .click();
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
+      .press("ControlOrMeta+a");
+    await page
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
+      .fill("0199999999");
+    await page.locator("#fld-email-com-0Step1").click();
+    await page.locator("#fld-email-com-0Step1").press("ControlOrMeta+a");
+    await page.locator("#fld-email-com-0Step1").fill("test@gmail.com");
+    await page.waitForTimeout(3000);
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
     await page
@@ -319,21 +379,12 @@ test("test", async ({ page }) => {
       .locator('input[name="StampingForm.FormBIndividualList[0].Postcode"]')
       .fill("50000");
     await page.waitForTimeout(4000);
-    await page
-      .locator("div")
-      .filter({ hasText: /^Bandar$/ })
-      .nth(1)
-      .click();
-    await page
-      .locator("div")
-      .filter({ hasText: /^Negeri$/ })
-      .nth(1)
-      .click();
+
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
     await page
       .getByRole("radio", { name: "Ada", exact: true })
-      .waitFor({ state: "visible", timeout: 20000 });
+      .waitFor({ state: "visible", timeout: 10000 });
 
     // Generate random numbers between 5-7 digits
     const randomDigits = Math.floor(Math.random() * 3) + 4; // Random between 5-7
@@ -359,6 +410,10 @@ test("test", async ({ page }) => {
         fixedPenaltyAmount =
           Math.floor(Math.random() * (900000000 - 100000000 + 1)) + 100000000;
         console.log(`Fixed penalty amount selected: ${fixedPenaltyAmount}`);
+        fs.appendFileSync(
+          "./test-data/srn-permanent-log.txt",
+          `[${new Date().toISOString()}] Fixed penalty amount selected: ${fixedPenaltyAmount}\n`,
+        );
       }
       amountToUse = fixedPenaltyAmount;
     } else {
@@ -377,6 +432,7 @@ test("test", async ({ page }) => {
 
     // Open calendar and pick the first enabled day in the currently shown month
     await page.locator("#section1 input[placeholder='dd/MM/yyyy']").click();
+    await page.waitForTimeout(3000);
     await openCal.waitFor({ state: "visible", timeout: 20000 });
     await openCal
       .locator(
@@ -417,6 +473,11 @@ test("test", async ({ page }) => {
     await page.waitForTimeout(5000);
 
     await page.getByRole("button", { name: "Seterusnya " }).click();
+
+    await page
+      .locator("h5.mb-3.fw-bold", { hasText: "Peremitan / Pengecualian" })
+      .waitFor({ state: "visible", timeout: 10000 });
+
     /*  await page.getByRole("radio", { name: "Ada", exact: true }).check();
     await page.getByRole("radio", { name: "Tiada" }).check(); */
     await page.getByRole("button", { name: "Seterusnya " }).click();
@@ -456,7 +517,7 @@ test("test", async ({ page }) => {
       .filter({ hasText: "Saya seperti nama dan Nombor" })
       .click();
     await page
-      .getByRole("radio", { name: "Pihak Pertama", exact: true })
+      .getByRole("radio", { name: "Wakil Pihak Pertama", exact: true })
       .check();
     await page.getByRole("button", { name: "Hantar " }).click();
     await page.getByRole("button", { name: "Batal" }).click();
@@ -468,8 +529,7 @@ test("test", async ({ page }) => {
       .getByRole("button", { name: "Kembali ke Paparan Utama" })
       .waitFor({ state: "visible", timeout: 20000 });
 
-    await page.goto("https://eds-dev.hasil.gov.my/Home/Index");
-    //   await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
+    await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
     await page.getByRole("heading", { name: "Senarai Permohonan" }).click();
 
     // Extract and log the SRN
@@ -492,28 +552,31 @@ test("test", async ({ page }) => {
     await page.getByRole("cell", { name: "LHDNM Proses" }).first().click();
 
     //HITS SIDE
-    //  await page.goto("https://hitspre2.hasil.gov.my/Dashboard/Login");
-    await page.goto("https://hitsdev.hasil.gov.my/Dashboard/Login");
+    await page.goto("https://hitspre2.hasil.gov.my/Dashboard/Login");
+
+    await page.waitForTimeout(5000);
+
     await page.locator(".login-screen").click();
     await page.locator("#Input_UsernameVal").click();
-    await page.locator("#Input_UsernameVal").fill(defaultHitsUser.loginId);
+    await page
+      .locator("#Input_UsernameVal")
+      .fill("userstds_pahang_pr@hasil.gov.my");
     await page.locator("#Input_UsernameVal").click();
     await page.locator("#Input_PasswordVal").click();
-    await page.locator("#Input_PasswordVal").fill(defaultHitsUser.password);
+    await page.locator("#Input_PasswordVal").fill("900101019039");
     await page.getByRole("button", { name: "Login" }).click();
     await page.waitForTimeout(2000);
     /*  await page.getByRole("link", { name: "Duti Setem " }).click();
     await page.getByRole("link", { name: "Taksiran Duti Setem" }).click(); */
-    // await page.goto("https://hitspre2.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
-    await page.goto("https://hitsdev.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
+    await page.goto("https://hitspre2.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
+
     await page.waitForTimeout(2000);
     /* await page
       .getByRole("link", { name: "Carian" })
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByRole("link", { name: "Carian" }).first().click(); */
     await page.goto(
-      "https://hitsdev.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
-      //  "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
+      "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
     await page.waitForTimeout(2000);
     await page
@@ -531,6 +594,7 @@ test("test", async ({ page }) => {
     const namaPemegangElement = await page.locator(
       'div.columns-item:has-text("Nama Pemegang SRN") + div.columns-item span[data-expression][style*="font-weight: bold"]',
     );
+    await namaPemegangElement.waitFor({ state: "visible", timeout: 20000 });
     const namaPemegang = await namaPemegangElement.textContent();
     const namaPemegangValue = namaPemegang?.trim() || "";
     console.log(`Nama Pemegang SRN: ${namaPemegangValue}`);
@@ -545,7 +609,7 @@ test("test", async ({ page }) => {
 
     // Read JSON file to find user credentials
     const usersData = JSON.parse(
-      fs.readFileSync("./test-data/users_dev.json", "utf-8"),
+      fs.readFileSync("./test-data/users_pre2.json", "utf-8"),
     );
 
     // Find the user by name
@@ -578,8 +642,8 @@ test("test", async ({ page }) => {
     /*  await page.getByRole("link", { name: "Duti Setem " }).click();
     await page.waitForTimeout(2000);
     await page.getByRole("link", { name: "Taksiran Duti Setem" }).click(); */
-    //  await page.goto("https://hitspre2.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
-    await page.goto("https://hitsdev.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
+    await page.goto("https://hitspre2.hasil.gov.my/HITS_DT/Dashboard_Taksiran");
+
     await page.waitForTimeout(5000);
     /*   await page
       .getByRole("link", { name: "Carian" })
@@ -587,8 +651,7 @@ test("test", async ({ page }) => {
     await page.getByRole("link", { name: "Carian" }).click();
     await page.waitForTimeout(2000); */
     await page.goto(
-      // "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
-      "https://hitsdev.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
+      "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
     await page.waitForTimeout(2000);
     await page.getByRole("radio", { name: "No TIN" }).check();
@@ -648,12 +711,12 @@ test("test", async ({ page }) => {
       await page.getByRole("button", { name: "Ya" }).click();
       await page.waitForTimeout(2000);
     }
-    await page
+    /*  await page
       .getByText("Tindakan - Taksiran Duti")
       .nth(1)
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByText("Tindakan - Taksiran Duti").nth(1).click();
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(3000); */
 
     if (isDutiDikecualikan) {
       //Duti Dikecualikan
@@ -687,6 +750,7 @@ test("test", async ({ page }) => {
       .waitFor({ state: "visible", timeout: 20000 });
     await page.locator("i.fa-times").click();
     await page.waitForTimeout(2000);
+
     await page
       .getByRole("button", { name: "Hantar" })
       .waitFor({ state: "visible", timeout: 20000 });
@@ -702,8 +766,7 @@ test("test", async ({ page }) => {
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByRole("link", { name: "Carian" }).click(); */
     await page.goto(
-      // "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
-      "https://hitsdev.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
+      "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
     await page.waitForTimeout(2000);
     await page
@@ -736,7 +799,7 @@ test("test", async ({ page }) => {
 
     // Read JSON file to find user credentials for endorsement
     const usersDataEndorse = JSON.parse(
-      fs.readFileSync("./test-data/users_dev.json", "utf-8"),
+      fs.readFileSync("./test-data/users_pre2.json", "utf-8"),
     );
 
     // Find the user by name
@@ -780,8 +843,7 @@ test("test", async ({ page }) => {
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByRole("link", { name: "Carian" }).click(); */
     await page.goto(
-      // "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
-      "https://hitsdev.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
+      "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
     await page.waitForTimeout(2000);
     await page.getByRole("radio", { name: "No TIN" }).check();
@@ -812,10 +874,9 @@ test("test", async ({ page }) => {
       .waitFor({ state: "visible", timeout: 20000 });
     await page.getByRole("link", { name: "Carian" }).click(); */
     await page.goto(
-      //  "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
-      "https://hitsdev.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
+      "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
-  
+
     // Save progress after successful iteration
     fs.writeFileSync(progressFile, i.toString());
     console.log(`Progress saved: iteration ${i} completed`);

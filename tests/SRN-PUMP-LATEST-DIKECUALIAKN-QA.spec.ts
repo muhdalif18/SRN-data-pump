@@ -153,8 +153,28 @@ test("test", async ({ page }) => {
     `\n=== Run started: ${runTimestamp} ===\n`,
   );
 
+  // Progress tracking: Read last completed iteration
+  const progressFile = "./test-data/progress-SRN-PUMP-LATEST-DIKECUALIAKN-QA.txt";
+  let startIteration = 1;
+
+  if (fs.existsSync(progressFile)) {
+    try {
+      const lastCompleted = parseInt(fs.readFileSync(progressFile, "utf-8").trim(), 10);
+      if (!isNaN(lastCompleted) && lastCompleted > 0) {
+        startIteration = lastCompleted + 1;
+        console.log(`Resuming from iteration ${startIteration} (last completed: ${lastCompleted})`);
+        fs.appendFileSync(
+          "./test-data/srn-permanent-log.txt",
+          `[${new Date().toISOString()}] Resuming from iteration ${startIteration}\n`,
+        );
+      }
+    } catch (err) {
+      console.log("Could not read progress file, starting from iteration 1");
+    }
+  }
+
   // Loop 40 times starting from the stamping upload
-  for (let i = 1; i <= 40; i++) {
+  for (let i = startIteration; i <= 40; i++) {
     const flowType = FLOW_PATTERN[(i - 1) % FLOW_PATTERN.length];
     const isPenalty = flowType === "PENALTY";
     const isDutiDikecualikan = flowType === "DUTI_DIKECUALIKAN";
@@ -799,5 +819,9 @@ test("test", async ({ page }) => {
     await page.goto(
       "https://hitspre2.hasil.gov.my/HITS_DT/carian_dashboard?SRN2=0",
     );
+  
+    // Save progress after successful iteration
+    fs.writeFileSync(progressFile, i.toString());
+    console.log(`Progress saved: iteration ${i} completed`);
   }
 });

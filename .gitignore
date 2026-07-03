@@ -3,3 +3,14 @@ dist/
 .env
 playwright-report/
 test-results/
+test-results-worker2/
+test-results-worker2-dikecualiakn/
+test-results-worker2-missing-phone/
+test-results-worker3-dikecualiakn/
+
+# Progress tracking files (crash recovery)
+test-data/progress-*.txt
+test-data/*-progress.txt
+
+# Browser profiles (separate instances)
+test-data/browser-profiles/

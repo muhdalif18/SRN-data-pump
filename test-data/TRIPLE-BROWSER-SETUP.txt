@@ -1,0 +1,143 @@
+================================================================================
+        🎉 SUCCESS - 3 SCRIPTS RUNNING IN 3 DIFFERENT BROWSERS 🎉
+================================================================================
+
+Date: 2026-07-02
+Configuration: Edge + Firefox + Chrome
+
+================================================================================
+                    BROWSER CONFIGURATION
+================================================================================
+
+Script 1: SRN-PUMP-LATEST-DIKECUALIAKN.spec.ts
+  Browser: Microsoft Edge
+  Status: ✅ Running
+  PM2 Process ID: 13
+
+Script 2: SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE.spec.ts
+  Browser: Firefox
+  Status: ✅ Running
+  PM2 Process ID: 12
+
+Script 3: SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-STAFF-FEDS.spec.ts
+  Browser: Chrome
+  Status: ✅ Running
+  PM2 Process ID: 11
+
+================================================================================
+                    COMMANDS
+================================================================================
+
+# Start all 3 scripts
+npm run srn-pump-triple:start-all
+
+# View logs for all 3
+npm run srn-pump-triple:logs-all
+
+# Stop all 3
+npm run srn-pump-triple:stop-all
+
+# Check status
+npm run bots:status
+
+================================================================================
+                    WHAT YOU SHOULD SEE
+================================================================================
+
+✅ 1 Edge window - Running DIKECUALIAKN script
+✅ 1 Firefox window - Running MISSING-PHONE script
+✅ 1 Chrome window - Running STAFF-FEDS script
+
+Total: 3 separate browser windows
+
+Note: Firefox window may appear/disappear during different stages of the test.
+All browsers will be visible once they reach the main form pages.
+
+================================================================================
+                    PROGRESS FILES
+================================================================================
+
+Each script has independent progress tracking:
+
+Script 1 (Edge): test-data/progress-SRN-PUMP-LATEST-DIKECUALIAKN.txt
+Script 2 (Firefox): test-data/srn-pump-missing-phone-progress.txt
+Script 3 (Chrome): test-data/srn-pump-missing-phone-staff-feds-progress.txt
+
+If any script crashes, PM2 auto-restarts it and it resumes from last completed
+iteration.
+
+================================================================================
+                    CRASH RECOVERY
+================================================================================
+
+✅ All 3 scripts have crash recovery enabled
+✅ Each maintains independent progress
+✅ PM2 auto-restart after crash (10 second delay)
+✅ Automatic resume from last completed iteration
+
+================================================================================
+                    MONITORING
+================================================================================
+
+# Check which browsers are running
+Get-Process msedge,firefox,chrome -ErrorAction SilentlyContinue |
+  Where-Object {$_.MainWindowHandle -ne 0} |
+  Select-Object ProcessName, Id, MainWindowTitle
+
+# Check PM2 status
+npm run bots:status
+
+# View logs for specific script
+npm run srn-pump-latest-dikecualiakn:logs              # Edge
+npm run srn-pump-latest-dikecualiakn-missing-phone:logs # Firefox
+npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:logs # Chrome
+
+================================================================================
+                    TROUBLESHOOTING
+================================================================================
+
+If you don't see Firefox window:
+1. Check if Firefox process is running: Get-Process firefox
+2. Check PM2 logs: npm run srn-pump-latest-dikecualiakn-missing-phone:logs
+3. Firefox might be minimized - check taskbar
+4. Firefox might be at login page (no visible window yet)
+
+If scripts crash:
+1. Check error logs in: C:\Users\syeda\.pm2\logs\
+2. PM2 will auto-restart them (check restart count with: pm2 list)
+3. Scripts will resume from last completed iteration
+
+================================================================================
+                    FILES MODIFIED
+================================================================================
+
+✅ tests/SRN-PUMP-LATEST-DIKECUALIAKN.spec.ts
+   Added: test.use({ channel: "msedge" });
+
+✅ tests/SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE.spec.ts
+   Added: test.use({ browserName: "firefox" });
+
+✅ tests/SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-STAFF-FEDS.spec.ts
+   Added: test.use({ channel: "chrome" });
+
+✅ package.json
+   Added: srn-pump-triple:* commands
+
+✅ Firefox installed via: npx playwright install firefox
+
+================================================================================
+                    VERIFICATION
+================================================================================
+
+Confirmed working as of 2026-07-02 23:26 UTC:
+✅ Edge window detected: LHDN STSDS
+✅ Chrome window detected: Dashboard_Taksiran
+✅ Firefox detected (window may be minimized)
+✅ All 3 PM2 processes online
+✅ Crash recovery active on all 3 scripts
+
+================================================================================
+End of Configuration Summary
+Generated: 2026-07-02
+Status: ✅ WORKING
+================================================================================

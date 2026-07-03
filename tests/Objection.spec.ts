@@ -19,23 +19,17 @@ test("test", async ({ page }) => {
   // CONFIGURE YOUR SRN NUMBERS HERE
   // ========================================
   const SRN_LIST = [
-    "9992619476546773",
-    "9992682204597484",
-    "9992652191309483",
-    "9992693561410734",
-    "9992654646441519",
-    "9992668708904929",
-    "9992619492654507",
-    "9992635148396815",
-    "9992674045550119",
-    "9992692111519735",
-    "9992686232293828",
-    "9992648450054503",
-    "9992619210500944",
-    "9992642533687774",
-    "9992660975925714",
-    "9992630022331405",
-    "9992627125669767",
+    "9992620592850906",
+    "9992617340714772",
+    "9992644642303907",
+    "9992627376489759",
+    "9992614810594090",
+    "9992690290273779",
+    "9992673889172903",
+    "9992645666499863",
+    "9992662901016188",
+    "9992627630688617",
+    "9992674903582585",
   ];
 
   //EDS SIDE
@@ -98,7 +92,18 @@ test("test", async ({ page }) => {
   await page.getByRole("button", { name: "Ok" }).click();
   await page.waitForTimeout(5000);
 
-  await page
+  //CHANGE PERANAN
+  await page.getByText("Individu", { exact: true }).click();
+  await page.getByText("Firma Pengurusan").click();
+  await page.getByText("Firma Ejen Duti Setem").click();
+  const page1Promise = page.waitForEvent("popup");
+  await page.getByText("GERBANG SARI ENGINEERING SDN BHD").click();
+  const page1 = await page1Promise;
+  await page1.waitForLoadState();
+  await page.bringToFront();
+  await page1.close();
+
+  /* await page
     .getByText("Perkhidmatan ezHasil")
     .waitFor({ state: "visible", timeout: 20000 });
   await page.getByText("Perkhidmatan ezHasil").click();
@@ -119,7 +124,7 @@ test("test", async ({ page }) => {
   await newPage.waitForLoadState();
   page = newPage;
 
-  await page.waitForTimeout(7000);
+  await page.waitForTimeout(7000); */
 
   // Clear the URL log file before starting
   fs.writeFileSync(
@@ -181,7 +186,7 @@ test("test", async ({ page }) => {
         )
         .click();
       await page.getByRole("button", { name: " Mohon" }).click();
-      await page.waitForTimeout(5000);
+      await page.waitForTimeout(8000);
       await page
         .getByText("Jenis Bantahan dan Rayuan:")
         .waitFor({ state: "visible", timeout: 20000 });

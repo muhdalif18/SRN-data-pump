@@ -1,4 +1,4 @@
-import { defineConfig } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -25,6 +25,18 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "msedge",
+      use: {
+        ...devices["Desktop Edge"],
+        channel: "msedge",
+      },
     },
   ],
 });

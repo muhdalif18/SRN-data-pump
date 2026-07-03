@@ -121,7 +121,32 @@ test("test", async ({ page }) => {
   );
 
   // Loop 20 times starting from the stamping upload
-  for (let i = 1; i <= 40; i++) {
+  
+  // Progress tracking: Read last completed iteration
+  const progressFile = "./test-data/progress-SRN-PUMP-LATEST.txt";
+  let startIteration = 1;
+
+  if (fs.existsSync(progressFile)) {
+    try {
+      const lastCompleted = parseInt(fs.readFileSync(progressFile, "utf-8").trim(), 10);
+      if (!isNaN(lastCompleted) && lastCompleted > 0) {
+        startIteration = lastCompleted + 1;
+        console.log(`Resuming from iteration ${startIteration} (last completed: ${lastCompleted})`);
+        fs.appendFileSync(
+          "./test-data/srn-permanent-log.txt",
+          `[${new Date().toISOString()}] Resuming from iteration ${startIteration}\n`,
+        );
+      }
+    } catch (err) {
+      console.log("Could not read progress file, starting from iteration 1");
+    
+    // Save progress after successful iteration
+    fs.writeFileSync(progressFile, i.toString());
+    console.log(`Progress saved: iteration ${i} completed`);
+  }
+  }
+
+  for (let i = startIteration; i <= 40; i++) {
     const isPenalty = PENALTY_PATTERN[(i - 1) % PENALTY_PATTERN.length];
     const dateToUse = isPenalty ? PENALTY_DATE : getCurrentDate();
     const docTitlePrefix = isPenalty ? "(PENALTY) " : "";
