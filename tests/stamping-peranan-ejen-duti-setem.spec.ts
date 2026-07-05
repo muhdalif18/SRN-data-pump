@@ -452,18 +452,32 @@ test("test", async ({ page }) => {
     await page
       .getByRole("button", { name: "Kembali ke Paparan Utama" })
       .click();
+
+    // Wait for the PDF download button and extract SRN from downloaded filename
+    await page.waitForTimeout(2000);
+    await page
+      .getByText("Cetak Slip Pengesahan")
+      .waitFor({ state: "visible", timeout: 20000 });
+
+    // Set up download handler before clicking
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByText("Cetak Slip Pengesahan").click();
+    const download = await downloadPromise;
+
+    // Extract SRN from filename: Slip_Pengesahan_9992619817932717.pdf
+    const filename = download.suggestedFilename();
+    const srnMatch = filename.match(/Slip_Pengesahan_(\d+)\.pdf/);
+    const srnValue = srnMatch ? srnMatch[1] : "";
+    console.log(`SRN extracted from PDF: ${srnValue}`);
+
+    // Save the PDF to test-data folder with original filename
+    await download.saveAs(`./test-data/${filename}`);
+
+    // Log the SRN
+    fs.appendFileSync("./test-data/current-url.txt", `SRN: ${srnValue}\n`);
+
     await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
     await page.getByRole("heading", { name: "Senarai Permohonan" }).click();
-
-    // Extract and log the SRN
-    await page.waitForTimeout(2000);
-    const srnElement = await page
-      .locator("p.modern-clickable-stamp[data-search]")
-      .first();
-    const srn = await srnElement.textContent();
-    const srnValue = srn?.trim() || "";
-    console.log(`SRN: ${srnValue}`);
-    fs.appendFileSync("./test-data/current-url.txt", `SRN: ${srnValue}\n`);
 
     await page.getByRole("cell", { name: "LHDNM Proses" }).first().click();
   }

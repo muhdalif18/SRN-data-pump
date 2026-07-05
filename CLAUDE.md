@@ -34,6 +34,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `npm run srn-pump-latest:one`
   - `npm run srn-pump-peranan:one`
   - `npm run srn-dev:one`
+  - `npm run srn-pump-latest-dikecualiakn:one`
+  - `npm run srn-pump-latest-dikecualiakn-worker2:one`
+  - `npm run srn-pump-latest-dikecualiakn-worker3:one`
+  - `npm run srn-pump-latest-dikecualiakn-optimized:one`
+  - `npm run srn-pump-latest-dikecualiakn-dev-new:one`
+  - `npm run srn-pump-normal:one`
+  - `npm run generate-pdf:one`
+  - `npm run srn-pump-latest-dikecualiakn-missing-phone:one`
+  - `npm run srn-pump-latest-dikecualiakn-missing-phone-worker2:one`
+  - `npm run srn-pump-penalty-only:one`
+  - `npm run srn-pump-normal-syarikat:one`
+  - `npm run srn-pump-normal-syarikat-worker2:one`
+  - `npm run srn-pump-latest-dikecualiakn-missing-phone-staff-feds:one`
 
 - Run an arbitrary spec directly:
   - `npx playwright test tests/<spec-name>.spec.ts`
@@ -42,8 +55,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - There is no separate build or lint script in `package.json`; validation is via Playwright runs.
 
 - Multi-worker coordination:
-  - Staggered start (60s delay): `npm run e2e-combine-penalti-without-penalty:staggered`
-  - Stop both workers: `npm run e2e-combine-penalti-without-penalty:stop-both`
+  - Penalty workers:
+    - Staggered start (60s delay): `npm run e2e-combine-penalti-without-penalty:staggered`
+    - Stop both workers: `npm run e2e-combine-penalti-without-penalty:stop-both`
+  - Dikecualiakn workers:
+    - Staggered start: `npm run srn-pump-latest-dikecualiakn:staggered`
+    - Stop both workers: `npm run srn-pump-latest-dikecualiakn:stop-both`
+    - Stop all three workers: `npm run srn-pump-latest-dikecualiakn:stop-all`
+  - Missing phone workers:
+    - Staggered start: `npm run srn-pump-latest-dikecualiakn-missing-phone:staggered`
+    - Stop both workers: `npm run srn-pump-latest-dikecualiakn-missing-phone:stop-both`
+  - Normal syarikat workers:
+    - Staggered start: `npm run srn-pump-normal-syarikat:staggered`
+    - Stop both workers: `npm run srn-pump-normal-syarikat:stop-both`
+  - Triple pump coordination:
+    - Start all three: `npm run srn-pump-triple:start-all`
+    - Start staggered: `npm run srn-pump-triple:start-staggered`
+    - Stop all three: `npm run srn-pump-triple:stop-all`
+    - View logs: `npm run srn-pump-triple:logs-all`
 
 - PM2 long-running jobs:
   - Start:
