@@ -1,11 +1,6 @@
 import { test, chromium, firefox, webkit } from "@playwright/test";
 import * as fs from "fs";
 
-// Override to use Firefox browser
-test.use({
-  browserName: "firefox",
-  headless: true,
-});
 
 const namaList = ["Form of Transfer of Securites"];
 
@@ -68,7 +63,7 @@ test("test", async ({ page }) => {
     .waitFor({ state: "visible", timeout: 20000 });
   await page
     .getByRole("textbox", { name: "No. Pengenalan" })
-    .fill("721101086035");
+    .fill("800403075628");
   await page.waitForTimeout(2000);
   await page
     .getByRole("button", { name: "Hantar" })
@@ -107,32 +102,19 @@ test("test", async ({ page }) => {
   await page.getByRole("button", { name: "Ok" }).click();
   await page.waitForTimeout(5000);
 
-  await page
-    .getByText("Perkhidmatan ezHasil")
-    .waitFor({ state: "visible", timeout: 20000 });
-  await page.getByText("Perkhidmatan ezHasil").click();
-  await page
-
-    .getByText("Duti Setem 2.0 (UAT) e-Duti")
-    .waitFor({ state: "visible", timeout: 20000 });
-
-  await page.getByText("Duti Setem 2.0 (UAT) e-Duti").click();
-
-  // Wait for new tab to open when clicking e-Duti Setem
-  const [newPage] = await Promise.all([
-    page.context().waitForEvent("page"),
-    page.getByRole("link", { name: "e-Duti Setem" }).click(),
-  ]);
-
-  // Switch to the new tab
-  await newPage.waitForLoadState();
-  page = newPage;
-
-  await page.waitForTimeout(7000);
-
+  //CHANGE PERANAN
+  await page.getByText("Individu", { exact: true }).click();
+  await page.getByText("Firma Pengurusan").click();
+  await page.getByText("Firma Guaman").click();
+  const page1Promise = page.waitForEvent("popup");
+  await page.getByText("HARUM SEGIEMAS SDN BHD - LANGKAWI").click();
+  const page1 = await page1Promise;
+  await page1.waitForLoadState();
+  await page.bringToFront();
+  await page1.close();
   // Clear the URL log file before starting
   fs.writeFileSync(
-    "./test-data/current-url-worker1.txt",
+    "./test-data/current-url-worker-fg.txt",
     "Stamping Submission URLs\n========================\n\n",
   );
 
@@ -178,15 +160,21 @@ test("test", async ({ page }) => {
   }
 
   // Progress tracking: Read last completed iteration
-  const progressFile = "./test-data/srn-pump-missing-phone-progress.txt";
+  const progressFile =
+    "./test-data/srn-pump-missing-phone-fg-progress.txt";
   let startIteration = 1;
 
   if (fs.existsSync(progressFile)) {
     try {
-      const lastCompleted = parseInt(fs.readFileSync(progressFile, "utf-8").trim(), 10);
+      const lastCompleted = parseInt(
+        fs.readFileSync(progressFile, "utf-8").trim(),
+        10,
+      );
       if (!isNaN(lastCompleted) && lastCompleted > 0) {
         startIteration = lastCompleted + 1;
-        console.log(`Resuming from iteration ${startIteration} (last completed: ${lastCompleted})`);
+        console.log(
+          `Resuming from iteration ${startIteration} (last completed: ${lastCompleted})`,
+        );
         fs.appendFileSync(
           "./test-data/srn-permanent-log.txt",
           `[${new Date().toISOString()}] Resuming from iteration ${startIteration}\n`,
@@ -313,17 +301,17 @@ test("test", async ({ page }) => {
       .click(); */
 
     await page
-      .locator('input[name="StampingForm.FormAIndividualList[0].TelNo"]')
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
       .click();
     await page
-      .locator('input[name="StampingForm.FormAIndividualList[0].TelNo"]')
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
       .press("ControlOrMeta+a");
     await page
-      .locator('input[name="StampingForm.FormAIndividualList[0].TelNo"]')
+      .locator('input[name="StampingForm.FormACompanyList[0].TelNo"]')
       .fill("0199999999");
-    await page.locator("#fld-email-ind-0Step1").click();
-    await page.locator("#fld-email-ind-0Step1").press("ControlOrMeta+a");
-    await page.locator("#fld-email-ind-0Step1").fill("test@gmail.com");
+    await page.locator("#fld-email-com-0Step1").click();
+    await page.locator("#fld-email-com-0Step1").press("ControlOrMeta+a");
+    await page.locator("#fld-email-com-0Step1").fill("test@gmail.com");
     await page.waitForTimeout(3000);
     await page.getByRole("button", { name: "Seterusnya " }).click();
 
@@ -529,7 +517,7 @@ test("test", async ({ page }) => {
       .filter({ hasText: "Saya seperti nama dan Nombor" })
       .click();
     await page
-      .getByRole("radio", { name: "Pihak Pertama", exact: true })
+      .getByRole("radio", { name: "Wakil Pihak Pertama", exact: true })
       .check();
     await page.getByRole("button", { name: "Hantar " }).click();
     await page.getByRole("button", { name: "Batal" }).click();
@@ -541,19 +529,29 @@ test("test", async ({ page }) => {
       .getByRole("button", { name: "Kembali ke Paparan Utama" })
       .waitFor({ state: "visible", timeout: 20000 });
 
-    await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
-    await page.getByRole("heading", { name: "Senarai Permohonan" }).click();
-
-    // Extract and log the SRN
+    // Wait for the PDF download button and extract SRN from downloaded filename
     await page.waitForTimeout(2000);
-    const srnElement = await page
-      .locator("p.modern-clickable-stamp[data-search]")
-      .first();
-    const srn = await srnElement.textContent();
-    const srnValue = srn?.trim() || "";
-    console.log(`SRN: ${srnValue}`);
+    await page
+      .getByText("Cetak Slip Pengesahan")
+      .waitFor({ state: "visible", timeout: 20000 });
+
+    // Set up download handler before clicking
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByText("Cetak Slip Pengesahan").click();
+    const download = await downloadPromise;
+
+    // Extract SRN from filename: Slip_Pengesahan_9992619817932717.pdf
+    const filename = download.suggestedFilename();
+    const srnMatch = filename.match(/Slip_Pengesahan_(\d+)\.pdf/);
+    const srnValue = srnMatch ? srnMatch[1] : "";
+    console.log(`SRN extracted from PDF: ${srnValue}`);
+
+    // Save the PDF to test-data folder with original filename
+    await download.saveAs(`./test-data/${filename}`);
+
+    // Log the SRN
     fs.appendFileSync(
-      "./test-data/current-url-worker1.txt",
+      "./test-data/current-url-worker-fg.txt",
       `SRN: ${srnValue}\n`,
     );
     fs.appendFileSync(
@@ -561,9 +559,16 @@ test("test", async ({ page }) => {
       `[${new Date().toISOString()}] Loop ${i} | SRN: ${srnValue} | ${flowLabel}\n`,
     );
 
+    await page.goto("https://eds-uat.hasil.gov.my/Home/Index");
+    await page.getByRole("heading", { name: "Senarai Permohonan" }).click();
+
     await page.getByRole("cell", { name: "LHDNM Proses" }).first().click();
 
     //HITS SIDE
+    await page.goto("https://hitspre2.hasil.gov.my/Dashboard/Login");
+    await page.waitForTimeout(3000);
+    await page.reload();
+
     await page.goto("https://hitspre2.hasil.gov.my/Dashboard/Login");
 
     await page.waitForTimeout(5000);
@@ -611,7 +616,7 @@ test("test", async ({ page }) => {
     const namaPemegangValue = namaPemegang?.trim() || "";
     console.log(`Nama Pemegang SRN: ${namaPemegangValue}`);
     fs.appendFileSync(
-      "./test-data/current-url-worker1.txt",
+      "./test-data/current-url-worker-fg.txt",
       `Nama Pemegang SRN: ${namaPemegangValue}\n`,
     );
     fs.appendFileSync(
@@ -722,8 +727,8 @@ test("test", async ({ page }) => {
     if (await page.getByRole("button", { name: "Ya" }).isVisible()) {
       await page.getByRole("button", { name: "Ya" }).click();
       await page.waitForTimeout(2000);
-   /*  }
-    await page
+    }
+    /*  await page
       .getByText("Tindakan - Taksiran Duti")
       .nth(1)
       .waitFor({ state: "visible", timeout: 20000 });
@@ -801,7 +806,7 @@ test("test", async ({ page }) => {
     const namaPemegangValueEndorse = namaPemegangEndorse?.trim() || "";
     console.log(`Nama Pemegang SRN (Endorsement): ${namaPemegangValueEndorse}`);
     fs.appendFileSync(
-      "./test-data/current-url-worker1.txt",
+      "./test-data/current-url-worker-fg.txt",
       `Nama Pemegang SRN (Endorsement): ${namaPemegangValueEndorse}\n`,
     );
     fs.appendFileSync(

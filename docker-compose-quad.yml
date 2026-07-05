@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  worker1-dikecualiakn:
+    build: .
+    container_name: srn-worker1-dikecualiakn
+    volumes:
+      - ./test-data:/app/test-data
+      - ./playwright-report:/app/playwright-report
+    environment:
+      - CI=true
+    command: npx playwright test tests/SRN-PUMP-LATEST-DIKECUALIAKN.spec.ts --project=chromium --reporter=list
+    restart: unless-stopped
+
+  worker2-fg:
+    build: .
+    container_name: srn-worker2-fg
+    volumes:
+      - ./test-data:/app/test-data
+    environment:
+      - CI=true
+    command: npx playwright test tests/SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-FG.spec.ts --project=chromium --reporter=list
+    restart: unless-stopped
+
+  worker3-individu:
+    build: .
+    container_name: srn-worker3-individu
+    volumes:
+      - ./test-data:/app/test-data
+    environment:
+      - CI=true
+    command: npx playwright test tests/SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-INDIVIDU.spec.ts --project=chromium --reporter=list
+    restart: unless-stopped
+
+  worker4-staff-feds:
+    build: .
+    container_name: srn-worker4-staff-feds
+    volumes:
+      - ./test-data:/app/test-data
+    environment:
+      - CI=true
+    command: npx playwright test tests/SRN-PUMP-LATEST-DIKECUALIAKN-MISSING-PHONE-STAFF-FEDS.spec.ts --project=chromium --reporter=list
+    restart: unless-stopped

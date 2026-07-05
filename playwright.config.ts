@@ -19,13 +19,13 @@ export default defineConfig({
     trace: "retain-on-failure",
     viewport: null,
     launchOptions: {
-      args: ["--start-maximized"],
+      args: ["--start-maximized", "--window-size=1920,1080"],
     },
   },
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Chrome"], viewport: null, deviceScaleFactor: undefined },
     },
     {
       name: "firefox",
